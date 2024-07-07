@@ -27,16 +27,24 @@ const initialState = {
 const fruitReducer = (state = initialState, action) => {
   switch (action.type) {
     case "SET_FRUIT_PRICE":
-      const { fruitName, price } = action.payload;
+      const fruitMap = action.payload.reduce((acc, fruit) => {
+        const key = fruit.name.toLowerCase().replace(" ", "_");
+        if (state[key]) {
+          acc[key] = { ...state[key], current_price: fruit.current_price };
+        }
 
+        return acc;
+      }, {});
       return {
         ...state,
-        [fruitName]: {
-          ...state[fruitName],
-          current_price: price.toFixed(2),
-        },
+        ...fruitMap,
+        error: null,
       };
-
+    case "FETCH_FRUITS_ERROR":
+      return {
+        ...state,
+        error: action.payload,
+      };
     default:
       return state;
   }

@@ -1,17 +1,21 @@
-const express = require("express");
-const router = express.Router();
-const pool = require("../modules/pool");
+import { call, put, takeLatest } from 'redux-saga/effects'; 
+import axios from 'axios'; 
 
-router.get("/", (req, res) => {
-  const queryText = "SELECT * FROM fruits";
-  console.log("Fetched fruits:", result.rows);
-  pool
-    .query(queryText)
-    .then((result) => res.send(result.rows))
-    .catch((error) => {
-      console.error("Error fetching fruits", error);
-      res.sendStatus(500);
-    });
-});
+function* fetchFruits() { 
+console.log('fetchFruits generator started'); 
+try { 
+const response = yield call(axios.get, '/api/fruits'); 
+console.log('Fetched fruits in saga:', response.data); 
+yield put({ type: 'SET_FRUITS', payload: response.data }); 
+} catch (error) { 
+console.error('Fetch fruits failed', error); 
+yield put({ type: 'FETCH_FRUITS_ERROR', payload: error.message }); 
+} 
+} 
 
-module.exports = router;
+function* fruitSaga() { 
+console.log('fruitSaga is running'); 
+yield takeLatest('FETCH_FRUITS', fetchFruits); 
+} 
+
+export default fruitSaga; 
