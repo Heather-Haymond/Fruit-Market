@@ -6,7 +6,7 @@ const Market = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const fruits = useSelector((state) => state.fruits);
-  const error = useSelector((state) => state.fruits.error);
+  const error = useSelector((state) => state.fruits?.error);
 
   useEffect(() => {
     console.log("Dispatching FETCH_FRUITS");
@@ -14,13 +14,14 @@ const Market = () => {
   }, [dispatch]);
 
   console.log("Fruits in MarketPlace:", fruits);
+  console.log("Error in MarketPlace:", error);
+
+  if (!fruits) {
+    return <div>Loading fruits...</div>;
+  }
 
   const hasFruits =
     fruits && typeof fruits === "object" && Object.keys(fruits).length > 0;
-
-  if (!hasFruits) {
-    return <div>Loading fruits...</div>;
-  }
 
   return (
     <div className="container">
