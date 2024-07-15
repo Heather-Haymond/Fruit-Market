@@ -26,18 +26,11 @@ const initialState = {
 
 const fruitReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "SET_FRUIT_PRICE":
-      const fruitMap = action.payload.reduce((acc, fruit) => {
-        const key = fruit.name.toLowerCase().replace(" ", "_");
-        if (state[key]) {
-          acc[key] = { ...state[key], current_price: fruit.current_price };
-        }
-
-        return acc;
-      }, {});
+    case "SET_FRUITS":
+      console.log('SET_FRUITS payload:', action.payload);
       return {
         ...state,
-        ...fruitMap,
+        ...action.payload,
         error: null,
       };
     case "FETCH_FRUITS_ERROR":
