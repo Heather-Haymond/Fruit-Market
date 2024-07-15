@@ -8,7 +8,7 @@ const response = yield call(axios.get, '/api/fruits');
 console.log('Fetched fruits in saga:', response.data); 
 yield put({ type: 'SET_FRUITS', payload: response.data }); 
 } catch (error) { 
-console.error('Fetch fruits failed', error); 
+console.error('Fetch fruits failed', error.response ? error.response.data : error.message); 
 yield put({ type: 'FETCH_FRUITS_ERROR', payload: error.message }); 
 } 
 } 

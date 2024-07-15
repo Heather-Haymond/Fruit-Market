@@ -5,8 +5,8 @@ import LogOutButton from "../LogOutButton/LogOutButton";
 const Market = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const fruits = useSelector((state) => state.fruits);
-  const error = useSelector((state) => state.fruits?.error);
+  const fruits = useSelector((state) => state.fruit);
+  const error = useSelector((state) => state.fruit.error);
 
   useEffect(() => {
     console.log("Dispatching FETCH_FRUITS");
@@ -16,6 +16,10 @@ const Market = () => {
   console.log("Fruits in MarketPlace:", fruits);
   console.log("Error in MarketPlace:", error);
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+  
   if (!fruits) {
     return <div>Loading fruits...</div>;
   }
@@ -28,9 +32,9 @@ const Market = () => {
       <h2>Welcome, {user.username}!</h2>
       <p>Your ID is: {user.id}</p>
       <p>Fruit:</p>
-      {fruits.error ? (
-        <p>Error: {fruits.error}</p>
-      ) : Object.keys(fruits).length > 0 ? (
+      {error ? (
+        <p>Error: {error}</p>
+        ) : hasFruits ? (
         <ul>
           {Object.entries(fruits).map(
             ([key, fruit]) =>
@@ -44,7 +48,7 @@ const Market = () => {
           )}
         </ul>
       ) : (
-        <p>{error ? `Error: ${error}` : "No fruits available"}</p>
+        <p>No fruits available</p>
       )}
 
       <LogOutButton className="btn" />
