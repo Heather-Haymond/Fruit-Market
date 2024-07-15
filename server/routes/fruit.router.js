@@ -4,7 +4,7 @@ const pool = require("../modules/pool");
 
 router.get("/", (req, res) => {
   const queryText = "SELECT * FROM fruits";
-
+  console.log("Received request to fetch fruits");
   pool
     .query(queryText)
     .then((result) => {
