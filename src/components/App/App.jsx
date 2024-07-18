@@ -20,7 +20,9 @@ import LandingPage from '../LandingPage/LandingPage';
 import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 import Inventory from '../Inventory/Inventory';
- import Market from '../Market/Market';
+import Market from '../Market/Market';
+import Wallet from '../Wallet/Wallet'; 
+import AverageTotal from '../AverageTotal/AverageTotal';
 
 import './App.css';
 
@@ -48,7 +50,7 @@ function App() {
             exact
             path="/about"
           >
-            <AboutPage />
+            <Wallet />
           </Route>
 
           <ProtectedRoute exact path="/market">
@@ -57,6 +59,13 @@ function App() {
           <ProtectedRoute exact path="/inventory"> 
             <Inventory />
           </ProtectedRoute>
+          <ProtectedRoute exact path="/wallet">
+            <Wallet />
+          </ProtectedRoute>
+          <ProtectedRoute exact path="/average-total">
+            <AverageTotal />
+          </ProtectedRoute>
+
 
           {/* For protected routes, the view could show one of several things on the same route.
             Visiting localhost:5173/user will show the UserPage if the user is logged in.

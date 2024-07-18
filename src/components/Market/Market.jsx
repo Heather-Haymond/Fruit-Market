@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import LogOutButton from "../LogOutButton/LogOutButton";
 import Inventory from "../Inventory/Inventory";
+import Wallet from "../Wallet/Wallet";
 
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -51,6 +52,7 @@ const Market = () => {
     <div className="container">
       <h2>Welcome, {user.username}!</h2>
       <p>Your ID is: {user.id}</p>
+      {/* <Wallet /> */}
       <p>Fruit:</p>
       {error ? (
         <p>Error: {error}</p>

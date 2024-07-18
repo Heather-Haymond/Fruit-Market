@@ -23,9 +23,50 @@ function* fetchUser() {
     console.log('User get request failed', error);
   }
 }
+function* buyFruit(action) {
+  try {
+    const config = {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    };
+    const response = yield call(
+      axios.post,
+      "/api/fruits/buy",
+      action.payload,
+      config
+    );
+    yield put({ type: "BUY_FRUIT_SUCCESS", payload: response.data });
+    yield put({ type: "FETCH_USER" });
+  } catch (error) {
+    console.log("Buy fruit request failed", error);
+    yield put({ type: "USER_ERROR", payload: error.message });
+  }
+}
+
+function* sellFruit(action) {
+  try {
+    const config = {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    };
+    const response = yield call(
+      axios.post,
+      "/api/fruits/sell",
+      action.payload,
+      config
+    );
+    yield put({ type: "SELL_FRUIT_SUCCESS", payload: response.data });
+    yield put({ type: "FETCH_USER" });
+  } catch (error) {
+    console.log("Sell fruit request failed", error);
+    yield put({ type: "USER_ERROR", payload: error.message });
+  }
+}
 
 function* userSaga() {
   yield takeLatest('FETCH_USER', fetchUser);
+  yield takeLatest('BUY_FRUIT', buyFruit);
+  yield takeLatest('SELL_FRUIT', sellFruit);
 }
 
 export default userSaga;
