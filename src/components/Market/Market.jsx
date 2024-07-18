@@ -1,12 +1,22 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import LogOutButton from "../LogOutButton/LogOutButton";
+import Inventory from "../Inventory/Inventory";
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+const replaceUnderscoreWithSpace = (string) => {
+  return string.replace(/_/g, " ");
+};
 
 const Market = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const fruits = useSelector((state) => state.fruit);
-  const error = useSelector((state) => state.fruit.error);
+  const inventory = useSelector((state) => state.inventory.inventory);
+  const error = useSelector((state) => state.error);
 
   useEffect(() => {
     console.log("Dispatching FETCH_FRUITS");
@@ -14,12 +24,22 @@ const Market = () => {
   }, [dispatch]);
 
   console.log("Fruits in MarketPlace:", fruits);
+  console.log("Inventory in Market:", inventory);
   console.log("Error in MarketPlace:", error);
+
+  const handleBuyFruit = (fruit) => {
+    const purchasePrice = fruit.current_price;
+    const userId = user.id;
+    dispatch({
+      type: "BUY_FRUIT",
+      payload: { fruitId: fruit.id, quantity: 1, purchasePrice, userId },
+    });
+  };
 
   if (error) {
     return <div>Error: {error}</div>;
   }
-  
+
   if (!fruits) {
     return <div>Loading fruits...</div>;
   }
@@ -34,14 +54,18 @@ const Market = () => {
       <p>Fruit:</p>
       {error ? (
         <p>Error: {error}</p>
-        ) : hasFruits ? (
+      ) : hasFruits ? (
         <ul>
           {Object.entries(fruits).map(
             ([key, fruit]) =>
               key !== "error" && (
                 <li key={key}>
                   <p>
-                    {fruit.name}: ${parseFloat(fruit.current_price)?.toFixed(2)}
+                    {capitalizeFirstLetter(
+                      replaceUnderscoreWithSpace(fruit.name)
+                    )}
+                    : ${parseFloat(fruit.current_price)?.toFixed(2)}
+                    <button onClick={() => handleBuyFruit(fruit)}>Buy</button>
                   </p>
                 </li>
               )
@@ -50,7 +74,7 @@ const Market = () => {
       ) : (
         <p>No fruits available</p>
       )}
-
+      <Inventory inventory={inventory} />
       <LogOutButton className="btn" />
     </div>
   );

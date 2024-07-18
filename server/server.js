@@ -10,6 +10,8 @@ const passport = require('./strategies/user.strategy');
 // Route Includes
 const userRouter = require('./routes/user.router');
 const fruitRouter = require('./routes/fruit.router'); 
+const buyRouter = require('./routes/buy.router'); 
+const inventoryRouter = require('./routes/inventory.router');
 
 // Express Middleware
 app.use(express.json());
@@ -26,6 +28,8 @@ app.use(passport.session());
 // Routes
 app.use('/api/user', userRouter);
 app.use('/api/fruits', fruitRouter); 
+app.use('/api/buy', buyRouter);
+app.use('/api/inventory', inventoryRouter);
 
 // Listen Server & Port
 app.listen(PORT, () => {
