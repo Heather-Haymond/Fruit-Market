@@ -48,30 +48,62 @@ router.post("/sell", async (req, res) => {
   if (!user_id || !fruit_id || !quantity || !purchase_price) {
     return res.status(400).json({ error: "Missing required fields" });
   }
-
-  const updateQuery = `
-    UPDATE inventory 
-    SET quantity = quantity - $1
-    WHERE user_id = $2 AND fruit_id = $3
-    RETURNING *
-  `;
-
-  const deleteQuery = `
-    DELETE FROM inventory
-    WHERE user_id = $1 AND fruit_id = $2 AND quantity <= 0
-  `;
-
   const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-    const updateResult = await client.query(updateQuery, [quantity, user_id, fruit_id]);
 
-    if (updateResult.rowCount > 0) {
-      await client.query(deleteQuery, [user_id, fruit_id]);
-    } else {
-      throw new Error('No inventory item found to sell');
+  try {
+    await client.query("BEGIN");
+
+  const inventoryQuery = `
+  SELECT quantity, purchase_price 
+  FROM inventory 
+  WHERE user_id = $1 AND fruit_id = $2
+  LIMIT 1;
+`;
+    const inventoryResult = await client.query(inventoryQuery, [user_id, fruit_id]);
+
+    if (inventoryResult.rows.length === 0) {
+      throw new Error("Fruit not found in inventory");
     }
 
+    const inventoryItem = inventoryResult.rows[0];
+    const updatedQuantity = inventoryItem.quantity - quantity;
+
+    if (updatedQuantity > 0) {
+      const updateInventoryQuery = `
+        UPDATE inventory 
+        SET quantity = $1 
+        WHERE user_id = $2 AND fruit_id = $3;
+      `;
+      await client.query(updateInventoryQuery, [updatedQuantity, user_id, fruit_id]);
+    } else {
+      const deleteInventoryQuery = `
+        DELETE FROM inventory 
+        WHERE user_id = $1 AND fruit_id = $2;
+      `;
+      await client.query(deleteInventoryQuery, [user_id, fruit_id]);
+    }
+    const totalCashQuery = `
+    SELECT total_cash 
+    FROM "user" 
+    WHERE id = $1;
+  `;
+
+  const totalCashResult = await client.query(totalCashQuery, [user_id]);
+    const totalCash = totalCashResult.rows[0].total_cash;
+    const newTotalCash = parseFloat(totalCash) + (quantity * parseFloat(sellPrice));
+
+    const updateCashQuery = `
+      UPDATE "user" 
+      SET total_cash = $1 
+      WHERE id = $2;
+    `;
+
+    const purchasePriceResult = await pool.query(purchasePriceQuery, [user_id, fruit_id]);
+    if (purchasePriceResult.rows.length === 0) {
+      throw new Error("Fruit not found in inventory");
+    }
+    const purchasePrice = purchasePriceResult.rows[0].purchase_price;
+    const inventoryQuantity = purchasePriceResult.rows[0].quantity;
     await client.query('COMMIT');
     res.sendStatus(200);
   } catch (error) {

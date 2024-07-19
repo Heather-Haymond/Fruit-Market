@@ -19,8 +19,6 @@ const groupByFruitId = (inventory) => {
   return Object.values(grouped);
 };
 
-
-
 const Inventory = () => {
   const dispatch = useDispatch();
   const { inventory, error } = useFetchInventory();
@@ -32,7 +30,7 @@ const Inventory = () => {
 
   console.log('Inventory:', inventory);
   console.log('Type of inventory:', typeof inventory);
-  console.log('Is array?', Array.isArray(inventory));
+
 
   if (error) return <div>Error: {error}</div>;
   if (!inventory) return <div>Loading...</div>;
