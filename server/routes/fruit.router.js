@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const pool = require('../modules/pool');
+const pool = require("../modules/pool");
 
 // Fetch inventory with fruit details
-router.get('/inventory', async (req, res) => {
+router.get("/inventory", async (req, res) => {
   try {
     const query = `
       SELECT 
@@ -19,53 +19,46 @@ router.get('/inventory', async (req, res) => {
     const { rows: inventory } = await pool.query(query);
     res.status(200).json(inventory);
   } catch (error) {
-    console.error('Error fetching inventory with fruit details:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching inventory with fruit details:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 // Update all fruit prices
-router.put('/update-all', async (req, res) => {
-  try {
-    const { rows: fruits } = await pool.query('SELECT id, current_price FROM fruits');
-    const updates = fruits.map(fruit => {
-      const currentPrice = fruit.current_price;
-      let fluctuation = (Math.random() * 0.50) - 0.25;
-      let newPrice = currentPrice + fluctuation;
 
-      if (currentPrice <= 0.51) {
-        fluctuation = Math.min(fluctuation, 0.51 - currentPrice);
-      } else if (currentPrice >= 9.49) {
-        fluctuation = Math.max(fluctuation, 9.99 - currentPrice);
-      }
+router.put("/fruits/prices", (req, res) => {
+  const queryText = ` 
+  UPDATE fruits 
+  SET current_price =  
+  CASE  
+  WHEN current_price + (random() * 0.50 + 0.01) > 9.99 THEN 9.99 
+  WHEN current_price + (random() * 0.50 + 0.01) < 0.50 THEN 0.50 
+  ELSE ROUND(CAST(current_price + (random() * 0.50 + 0.01) AS numeric), 2) 
+  END 
+  RETURNING id, name, current_price; 
+  `;
 
-      newPrice = currentPrice + fluctuation;
-      if (newPrice > 9.99) newPrice = 9.99;
-      if (newPrice < 0.50) newPrice = 0.50;
-
-      return pool.query(
-        'UPDATE fruits SET current_price = $1 WHERE id = $2 RETURNING id, name, current_price',
-        [newPrice, fruit.id]
-      );
+  pool
+    .query(queryText)
+    .then((result) => {
+      console.log(`Updated price for fruits`);
+      res.status(200).json(result.rows);
+    })
+    .catch((error) => {
+      console.error(`Error updating price for fruits`, error);
+      res.status(500).json({ error: "Internal Server Error" });
     });
-
-    const results = await Promise.all(updates);
-    res.status(200).json({ message: 'Prices updated successfully', results: results.map(result => result.rows[0]) });
-  } catch (error) {
-    console.error('Error updating prices:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
 });
 
 // Fetch all fruits
 router.get("/", (req, res) => {
-  pool.query('SELECT * FROM fruits')
-    .then(result => res.send(result.rows))
-    .catch(error => {
-      console.error('Error fetching fruits', error);
+  pool
+    .query("SELECT * FROM fruits")
+    .then((result) => res.send(result.rows))
+    .catch((error) => {
+      console.error("Error fetching fruits", error);
       res.sendStatus(500);
     });
 });
 
 module.exports = router;
-

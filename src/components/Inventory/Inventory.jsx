@@ -40,6 +40,7 @@ const Inventory = () => {
 
   return (
     <div>
+      <h3>Inventory Basket</h3>
       {groupedInventory.map((fruit) => (
         <div key={fruit.id} className="category">
         <InventoryItem

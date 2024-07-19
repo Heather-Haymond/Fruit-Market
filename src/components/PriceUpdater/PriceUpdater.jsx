@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const PriceUpdater = ({ onPricesUpdate }) => {
+const PriceUpdater = () => {
   const [prices, setPrices] = useState([]);
   const [error, setError] = useState(null);
 
@@ -11,14 +11,14 @@ const PriceUpdater = ({ onPricesUpdate }) => {
         const response = await axios.get("/api/fruits");
         if (response.data) {
           console.log("Fetched prices:", response.data);
-          const updatedPrices = response.data.map((fruit) => ({
+          const updatedPrices = response.data.map(fruit => ({
             ...fruit,
-            current_price: parseFloat(fruit.current_price),
+            current_price: parseFloat(fruit.current_price)
           }));
           setPrices(updatedPrices);
-          if (typeof onPricesUpdate === "function") {
-            onPricesUpdate(updatedPrices);
-          }
+        } else {
+          console.error("No data returned from API");
+          setError("No data returned from API");
         }
       } catch (error) {
         console.error("Error fetching prices:", error);
@@ -26,19 +26,10 @@ const PriceUpdater = ({ onPricesUpdate }) => {
       }
     };
 
-    const updatePrices = async () => {
-      try {
-        await axios.put("/api/fruits/update-all");
-        fetchPrices();
-      } catch (error) {
-        console.error("Error updating prices:", error);
-      }
-    };
-
     fetchPrices();
-    const intervalId = setInterval(updatePrices, 15000);
+    const intervalId = setInterval(fetchPrices, 15000);
     return () => clearInterval(intervalId);
-  }, [onPricesUpdate]);
+  }, []);
 
   return (
     <div>

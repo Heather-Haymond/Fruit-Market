@@ -50,10 +50,10 @@ const Market = () => {
   return (
     <div className="container">
       <h2>Welcome, {user.username}!</h2>
-      <p>Your ID is: {user.id}</p>
+      {/* <p>Your ID is: {user.id}</p> */}
       <PriceUpdater onPricesUpdate={handlePricesUpdate} />
       {/* <Wallet /> */}
-      <p>Fruit:</p>
+      <h3>Fruit Market</h3>
       {error ? (
         <p>Error: {error}</p>
       ) : hasFruits ? (
