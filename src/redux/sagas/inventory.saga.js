@@ -1,9 +1,9 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
 function* fetchInventory() {
   try {
-    const response = yield axios.get('/api/inventory');
+    const response = yield axios.get('/api/inventory', action.payload);
     yield put({ type: 'SET_INVENTORY', payload: response.data });
   } catch (error) {
     console.error('Inventory fetch error:', error);
@@ -12,7 +12,7 @@ function* fetchInventory() {
 }
 function* sellSaga() {
     try {
-      const response = yield call(axios.post, '/api/sell-fruit', action.payload);
+      const response = yield call(axios.post,  '/api/inventory/sell', action.payload);
 
       yield put({ type: 'SELL_FRUIT_SUCCESS', payload: response.data });
     } catch (error) {
@@ -20,11 +20,16 @@ function* sellSaga() {
     }
 }
 
-function* buySaga() {
+function* buySaga(action) {
     try {
       const { fruitId, quantity, purchasePrice, userId } = action.payload;
       console.log('Buy fruit payload:', action.payload);
-      const response = yield call(axios.post, '/api/buy', { user_id: userId, fruit_id: fruitId, quantity, purchase_price: purchasePrice });
+      const response = yield call(axios.post, '/api/inventory/buy', {
+         user_id: userId, 
+         fruit_id: fruitId,
+          quantity,
+           purchase_price: purchasePrice
+           });
       console.log('Buy fruit response:', response.data);
       yield put({ type: 'BUY_FRUIT_SUCCESS', payload: response.data });
     } catch (error) {

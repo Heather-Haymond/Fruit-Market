@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
+import SellButton from "../SellButton/SellButton";
 
-const InventoryItem = ({ fruitName, quantity, averagePrice, purchasePrices, onSell }) => {
+const InventoryItem = ({ fruit, onSell }) => {
   return (
     <div className="inventory-item">
-      <h3>{fruitName}</h3>
-      <p>Total Quantity: {quantity}</p>
-      <p>Average Price: ${averagePrice.toFixed(2)}</p>
+      <h3>{fruit.name}</h3>
       <ul>
-        {purchasePrices.map((price, index) => (
+        {fruit.purchasePrices.map((price, index) => (
           <li key={index}>
+            Total Quantity: {fruit.quantity}, 
             Price: ${price.toFixed(2)}
-            <button onClick={() => onSell(index)}>Sell</button>
+            <SellButton onClick={() => onSell(index)} text="Sell" />
           </li>
         ))}
       </ul>

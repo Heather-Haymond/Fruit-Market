@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import LogOutButton from "../LogOutButton/LogOutButton";
 import Inventory from "../Inventory/Inventory";
-import Wallet from "../Wallet/Wallet";
+import PriceUpdater from "../PriceUpdater/PriceUpdater";
+import BuyButton from "../BuyButton/BuyButton";
 
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -19,6 +20,13 @@ const Market = () => {
   const inventory = useSelector((state) => state.inventory.inventory);
   const error = useSelector((state) => state.error);
 
+  const handlePricesUpdate = (updatedPrices) => {
+    dispatch({
+      type: "SET_FRUIT",
+      payload: updatedPrices,
+    });
+  };
+
   useEffect(() => {
     console.log("Dispatching FETCH_FRUITS");
     dispatch({ type: "FETCH_FRUITS" });
@@ -27,15 +35,6 @@ const Market = () => {
   console.log("Fruits in MarketPlace:", fruits);
   console.log("Inventory in Market:", inventory);
   console.log("Error in MarketPlace:", error);
-
-  const handleBuyFruit = (fruit) => {
-    const purchasePrice = fruit.current_price;
-    const userId = user.id;
-    dispatch({
-      type: "BUY_FRUIT",
-      payload: { fruitId: fruit.id, quantity: 1, purchasePrice, userId },
-    });
-  };
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -52,6 +51,7 @@ const Market = () => {
     <div className="container">
       <h2>Welcome, {user.username}!</h2>
       <p>Your ID is: {user.id}</p>
+      <PriceUpdater onPricesUpdate={handlePricesUpdate} />
       {/* <Wallet /> */}
       <p>Fruit:</p>
       {error ? (
@@ -67,7 +67,7 @@ const Market = () => {
                       replaceUnderscoreWithSpace(fruit.name)
                     )}
                     : ${parseFloat(fruit.current_price)?.toFixed(2)}
-                    <button onClick={() => handleBuyFruit(fruit)}>Buy</button>
+                    <BuyButton fruit={fruit} />
                   </p>
                 </li>
               )

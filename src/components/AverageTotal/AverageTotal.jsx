@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchInventory } from './sagas/inventorySaga';
 
-const TotalValue = () => {
+
+const AverageTotal = () => {
   const dispatch = useDispatch();
   const inventory = useSelector((state) => state.inventory);
 
@@ -33,4 +33,4 @@ const TotalValue = () => {
   );
 };
 
-export default TotalValue;
+export default AverageTotal;

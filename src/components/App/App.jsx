@@ -23,6 +23,7 @@ import Inventory from '../Inventory/Inventory';
 import Market from '../Market/Market';
 import Wallet from '../Wallet/Wallet'; 
 import AverageTotal from '../AverageTotal/AverageTotal';
+import PriceUpdater from '../PriceUpdater/PriceUpdater';
 
 import './App.css';
 
@@ -65,6 +66,9 @@ function App() {
           <ProtectedRoute exact path="/average-total">
             <AverageTotal />
           </ProtectedRoute>
+          <ProtectedRoute exact path="/price-updater">
+          <PriceUpdater />
+        </ProtectedRoute>
 
 
           {/* For protected routes, the view could show one of several things on the same route.
