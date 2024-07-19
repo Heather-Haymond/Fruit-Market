@@ -31,9 +31,9 @@ router.put("/fruits/prices", (req, res) => {
   UPDATE fruits 
   SET current_price =  
   CASE  
-  WHEN current_price + (random() * 0.50 + 0.01) > 9.99 THEN 9.99 
-  WHEN current_price + (random() * 0.50 + 0.01) < 0.50 THEN 0.50 
-  ELSE ROUND(CAST(current_price + (random() * 0.50 + 0.01) AS numeric), 2) 
+  WHEN current_price + (random() - 0.5) * 0.50 < 0.50 THEN 0.50 
+  WHEN current_price + (random() - 0.5) * 0.50 > 9.99 THEN 9.99 
+  ELSE ROUND(CAST(current_price + (random() - 0.5) * 0.50 AS numeric), 2)
   END 
   RETURNING id, name, current_price; 
   `;

@@ -33,7 +33,7 @@ function Nav() {
             </Link>
 
             <Link className="navLink" to="/about">
-              About
+              Wallet
             </Link>
 
             <LogOutButton className="navLink" />
