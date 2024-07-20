@@ -10,12 +10,15 @@ function* fetchInventory() {
     yield put({ type: 'FETCH_INVENTORY_ERROR', payload: error.message });
   }
 }
-function* sellSaga() {
+function* sellSaga(action) {
     try {
+      const { fruit_id, quantity, purchase_price, user_id  } = action.payload;
+      console.log('Sell fruit payload:', { fruit_id, quantity, purchase_price, user_id });
       const response = yield call(axios.post,  '/api/inventory/sell', action.payload);
-
+      console.log('Sell fruit response:', response.data);
       yield put({ type: 'SELL_FRUIT_SUCCESS', payload: response.data });
     } catch (error) {
+      console.error('Sell fruit error:', error);
       yield put({ type: 'SELL_FRUIT_FAILURE', payload: error.message });
     }
 }

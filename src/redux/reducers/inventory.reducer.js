@@ -54,15 +54,12 @@ const inventoryReducer = (state = initialState, action) => {
         ...state,
         error: action.payload,
       };
-
-    case "SELL_FRUIT_FAILURE":
-      return {
-        ...state,
-        error: action.payload,
-      };
-
     case "SELL_FRUIT_SUCCESS":
       const updatedInventory = { ...state.inventory };
+      if (quantity <= 0 || isNaN(quantity)) {
+        console.error('Invalid quantity:', quantity);
+        return state;
+      }
       if (updatedInventory[action.payload.id]) {
         updatedInventory[action.payload.id].quantity -= action.payload.quantity;
         if (updatedInventory[action.payload.id].quantity <= 0) {
@@ -74,7 +71,12 @@ const inventoryReducer = (state = initialState, action) => {
         inventory: updatedInventory,
         error: null,
       };
-
+      case "SELL_FRUIT_FAILURE":
+        return {
+          ...state,
+          error: action.payload,
+        };
+  
     default:
       return state;
   }

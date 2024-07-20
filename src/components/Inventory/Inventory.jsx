@@ -1,11 +1,11 @@
 import React from 'react';
 import InventoryItem from './InventoryItem';
 import useFetchInventory from '../../hooks/useFetchInventory';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const groupByFruitId = (inventory) => {
   const grouped = {};
-  inventory.forEach((fruitItem) => {
+inventory.forEach((fruitItem) => {
     const { fruit_id, name, purchase_price } = fruitItem;
     if (!grouped[fruit_id]) {
       grouped[fruit_id] = {
@@ -21,19 +21,18 @@ const groupByFruitId = (inventory) => {
 
 const Inventory = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const { inventory, error } = useFetchInventory();
 
+  console.log('User in Inventory:', user);
   console.log('Inventory:', inventory);
   if (inventory && inventory.length > 0) {
     console.log('Type of purchase_price for first item:', typeof inventory[0]?.purchase_price);
   }
 
-  console.log('Inventory:', inventory);
-  console.log('Type of inventory:', typeof inventory);
-
-
   if (error) return <div>Error: {error}</div>;
   if (!inventory) return <div>Loading...</div>;
+
   const groupedInventory = groupByFruitId(inventory);
 
   return (
@@ -43,7 +42,7 @@ const Inventory = () => {
         <div key={fruit.id} className="category">
         <InventoryItem
           fruit={fruit}  
-          onSell={(index) => dispatch({ type: 'SELL_FRUIT', payload: { fruitId: fruit.id, index } })}
+          user={user} 
         />
       </div>
       ))}

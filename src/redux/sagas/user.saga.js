@@ -51,7 +51,7 @@ function* sellFruit(action) {
     };
     const response = yield call(
       axios.post,
-      "/api/fruits/sell",
+      "/api/inventory/sell",
       action.payload,
       config
     );

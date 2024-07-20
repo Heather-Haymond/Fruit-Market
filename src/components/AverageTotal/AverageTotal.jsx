@@ -1,26 +1,23 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import useFetchInventory from '../../hooks/useFetchInventory';
 
 
 const AverageTotal = () => {
-  const dispatch = useDispatch();
-  const inventory = useSelector((state) => state.inventory);
+  const { inventory, error } = useFetchInventory();
 
-  useEffect(() => {
-    dispatch(fetchInventory());
-  }, [dispatch]);
+  if (error) return <div>Error: {error}</div>;
 
   const calculateTotal = () => {
-    return Object.values(inventory).reduce((total, fruit) => 
-      total + fruit.quantity * fruit.purchase_price, 0
+    return inventory.reduce((total, fruit) => 
+      total + fruit.total_quantity * fruit.average_purchase_price, 0
     ).toFixed(2);
   };
 
   const calculateAveragePrice = () => {
-    const totalFruits = Object.values(inventory).reduce((sum, fruit) => sum + fruit.quantity, 0);
+    const totalFruits = inventory.reduce((sum, fruit) => sum + fruit.quantity, 0);
     if (totalFruits === 0) return 'N/A';
-    const totalValue = Object.values(inventory).reduce((sum, fruit) => 
-      sum + fruit.quantity * fruit.purchase_price, 0
+    const totalValue = inventory.reduce((sum, fruit) => 
+      sum + fruit.total_quantity * fruit.average_purchase_price, 0
     );
     return (totalValue / totalFruits).toFixed(2);
   };
