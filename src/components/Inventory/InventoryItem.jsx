@@ -16,11 +16,11 @@ const InventoryItem = ({ fruit, user }) => {
       <ul>
         {fruit.purchasePrices.map((price, index) => (
           <li key={index}>
-            Total Quantity: {fruit.quantity || 'N/A'}, 
+            Total Quantity: {fruit.totalQuantity || 'N/A'}, 
             Price: ${price.toFixed(2)}
             <SellButton 
               fruit_id={fruit.id} 
-              quantity={fruit.quantity}
+              quantity={fruit.totalQuantity}
               purchase_price={price} 
               user_id={user.id}  
               text="Sell" 

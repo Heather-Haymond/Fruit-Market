@@ -17,6 +17,7 @@ router.get("/inventory", async (req, res) => {
       JOIN fruits ON inventory.fruit_id = fruits.id;
     `;
     const { rows: inventory } = await pool.query(query);
+    console.log(`Fetched inventory data:`, inventory);
     res.status(200).json(inventory);
   } catch (error) {
     console.error("Error fetching inventory with fruit details:", error);
@@ -29,11 +30,11 @@ router.get("/inventory", async (req, res) => {
 router.put("/fruits/prices", (req, res) => {
   const queryText = ` 
   UPDATE fruits 
-  SET current_price =  
-  CASE  
-  WHEN current_price + (random() - 0.5) * 0.50 < 0.50 THEN 0.50 
-  WHEN current_price + (random() - 0.5) * 0.50 > 9.99 THEN 9.99 
-  ELSE ROUND(CAST(current_price + (random() - 0.5) * 0.50 AS numeric), 2)
+  SET current_price =
+  CASE 
+  WHEN current_price <= 0.50 THEN 0.50
+  WHEN current_price >= 9.99 THEN 9.99
+  ELSE ROUND(CAST(current_price + ((random() * 0.49) + 0.01) * (CASE WHEN random() < 0.5 THEN -1 ELSE 1 END), 2)
   END 
   RETURNING id, name, current_price; 
   `;

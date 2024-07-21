@@ -1,23 +1,8 @@
 import React from 'react';
 import InventoryItem from './InventoryItem';
 import useFetchInventory from '../../hooks/useFetchInventory';
+import { groupByFruitId } from "../../utils/aggregateData";
 import { useDispatch, useSelector } from 'react-redux';
-
-const groupByFruitId = (inventory) => {
-  const grouped = {};
-inventory.forEach((fruitItem) => {
-    const { fruit_id, name, purchase_price } = fruitItem;
-    if (!grouped[fruit_id]) {
-      grouped[fruit_id] = {
-        id: fruit_id,
-        name,
-        purchasePrices: [],
-      };
-    }
-    grouped[fruit_id].purchasePrices.push(Number(purchase_price)); // Ensure 
-  });
-  return Object.values(grouped);
-};
 
 const Inventory = () => {
   const dispatch = useDispatch();

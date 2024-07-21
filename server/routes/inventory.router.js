@@ -36,7 +36,17 @@ router.get("/:userId", async (req, res) => {
       [userId]
     );
 
-    res.json(result.rows);
+    const formattedRows = result.rows.map(row => ({
+      id: row.id,
+      userId: row.user_id,
+      fruitId: row.fruit_id,
+      name: row.fruit_name,
+      quantity: row.quantity,
+      purchasePrices: [parseFloat(row.purchase_price)], 
+      totalQuantity: row.quantity 
+    }));
+
+    res.json(formattedRows.rows);
   } catch (error) {
     console.error("Error fetching inventory data for user:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -157,7 +167,7 @@ router.post("/sell", async (req, res) => {
 
     const purchasePrice = parseFloat(inventoryItem.purchase_price);
     const totalCash = parseFloat(totalCashResult.rows[0].total_cash);
-    const newTotalCash = totalCash + quantity * purchasePrice;
+    const newTotalCash = totalCash + (quantity * purchasePrice);
 
     const updateCashQuery = `
       UPDATE "user" 
@@ -177,6 +187,7 @@ router.post("/sell", async (req, res) => {
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Error selling item from inventory:", error);
+    if (!res.headersSent) 
     res.status(500).json({ error: "Error selling item from inventory" });
   } finally {
     client.release();
