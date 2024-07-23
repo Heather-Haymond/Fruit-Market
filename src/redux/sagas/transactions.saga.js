@@ -1,5 +1,5 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { formatCash, calculateNewTotalCash } from '../../utils/cashUser';
+import { formatCash, calculateNewTotalCash } from '../../utils/cashUser.js';
 import axios from 'axios';
   
   function* sellSaga(action) {
@@ -19,6 +19,11 @@ import axios from 'axios';
       try {
         const { fruitId, quantity, purchasePrice, userId } = action.payload;
         console.log('Buy fruit payload:', action.payload);
+        const parsedPurchasePrice = parseFloat(purchasePrice);
+        if (isNaN(parsedPurchasePrice)) {
+          throw new Error('Amount must be a number');
+        }
+    
         const response = yield call(axios.post, '/api/transactions/buy', {
            user_id: userId, 
            fruit_id: fruitId,
@@ -26,7 +31,7 @@ import axios from 'axios';
              purchase_price: purchasePrice
              });
              const { newTotalCash, updatedInventory } = response.data;
-             const formattedTotalCash = formatCash(newTotalCash);
+             const formattedTotalCash = formatCash(parseFloat(newTotalCash));
              console.log('New total cash:', formatCash(parseFloat(newTotalCash)));
              console.log('Updated inventory:', updatedInventory);
         console.log('Buy fruit response:', response.data);

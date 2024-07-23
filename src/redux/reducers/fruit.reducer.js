@@ -1,5 +1,7 @@
 const initialState = {
- 
+  fruits: [],
+  error: null,
+  userCash: 100.00,
 };
 
 const fruitReducer = (state = initialState, action) => {

@@ -4,6 +4,7 @@ import useFetchInventory from '../../hooks/useFetchInventory';
 
 const AverageTotal = () => {
   const { inventory, error } = useFetchInventory();
+  // console.log('Inventory:', inventory);
 
   if (error) return <div>Error: {error}</div>;
 

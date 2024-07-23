@@ -2,56 +2,43 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../modules/pool'); 
 
+
 // GET all inventory
-router.get('/', (req, res) => {
-  const query = 'SELECT * FROM inventory;'; 
-  pool.query(query)
-    .then((result) => {
-      const formattedRows = result.rows.map(row => ({
-        ...row,
-        purchase_price: parseFloat(row.purchase_price) 
-      }));
-      res.json(formattedRows); 
-    })
-    .catch((error) => {
-      console.error('Error fetching inventory:', error);
-      res.sendStatus(500);
-    });
-});
-
-// GET inventory data for a specific user
-router.get("/:userId", async (req, res) => {
-  const userId = parseInt(req.params.userId, 10);
-
-  if (isNaN(userId)) {
-    return res.status(400).json({ error: "Invalid user ID" });
-  }
-
+router.get('/', async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT i.*, f.*
-       FROM "inventory" i
-       JOIN "fruits" f ON i."fruit_id" = f."id"
-       WHERE i."user_id" = $1`,
-      [userId]
-    );
+    const result = await pool.query(`
+      SELECT 
+        i.id AS inventory_id,
+        u.username,
+        f.name AS fruit_name,
+        i.quantity,
+        i.purchase_price
+      FROM 
+        inventory i
+      JOIN 
+        "user" u ON i.user_id = u.id
+      JOIN 
+        fruits f ON i.fruit_id = f.id;
+    `);
 
     const formattedRows = result.rows.map(row => ({
-      id: row.id,
-      userId: row.user_id,
-      fruitId: row.fruit_id,
-      name: row.fruit_name,
+      inventory_id: row.inventory_id,
+      username: row.username,
+      fruit_name: row.fruit_name,
       quantity: row.quantity,
-      purchasePrices: [parseFloat(row.purchase_price)], 
-      totalQuantity: row.quantity 
+      purchase_price: parseFloat(row.purchase_price)
     }));
-
-    res.json(formattedRows.rows);
+    console.log('Formatted Rows:', formattedRows);
+    res.json(formattedRows);
   } catch (error) {
-    console.error("Error fetching inventory data for user:", error);
+    console.error('Error fetching inventory:', error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+module.exports = router;
+
+
 // //buy
 // router.post('/buy', async (req, res) => {
 //   const { user_id, fruit_id, quantity, purchase_price } = req.body;
@@ -217,4 +204,4 @@ router.get("/:userId", async (req, res) => {
 //   }
 // });
 
-module.exports = router;
+

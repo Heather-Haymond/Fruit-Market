@@ -6,8 +6,12 @@ const BuyButton = ({ fruit }) => {
   const user = useSelector((state) => state.user);
 
   const handleBuyFruit = () => {
-    const purchasePrice = fruit.current_price;
+    const purchasePrice = parseFloat(fruit.current_price);
     const userId = user.id;
+    if (isNaN(purchasePrice)) {
+      console.error('Invalid purchase price');
+      return;
+    }
     dispatch({
       type: "BUY_FRUIT",
       payload: { fruitId: fruit.id, quantity: 1, purchasePrice, userId },

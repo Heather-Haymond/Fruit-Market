@@ -10,6 +10,10 @@ const InventoryItem = ({ fruit, user }) => {
     console.error('Invalid fruit data in InventoryItem');
     return <div>Error: Invalid fruit data</div>;
   }
+  if (!Array.isArray(fruit.purchasePrices)) {
+    console.error('purchasePrices is not an array in InventoryItem:', fruit.purchasePrices);
+    return <div>Error: Invalid purchase prices data</div>;
+  }
   return (
     <div className="inventory-item">
       <h3>{fruit.name}</h3>

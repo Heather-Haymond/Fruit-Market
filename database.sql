@@ -10,21 +10,20 @@ CREATE TABLE "user" (
     "total_cash" DECIMAL(10, 2) DEFAULT 100.00 CHECK (total_cash >= 0)
 );
 
--- Fruits table with constraints on current_price
 CREATE TABLE "fruits" ( 
     "id" SERIAL PRIMARY KEY, 
     "name" VARCHAR(100) NOT NULL, 
     "current_price" DECIMAL(10, 2) NOT NULL CHECK (current_price >= 0.50 AND current_price <= 9.99)
 ); 
 
--- Inventory table with foreign key constraints referencing user and fruits tables
 CREATE TABLE "inventory" ( 
     "id" SERIAL PRIMARY KEY, 
-    "user_id" INTEGER REFERENCES "user"(id) ON DELETE CASCADE, 
-    "fruit_id" INTEGER REFERENCES "fruits"(id) ON DELETE CASCADE, 
+    "user_id" INTEGER REFERENCES "user"(id), 
+    "fruit_id" INTEGER REFERENCES "fruits"(id), 
     "quantity" INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
     "purchase_price" DECIMAL(10, 2) NOT NULL CHECK (purchase_price >= 0.50)
 ); 
+
 
 -- Insert initial fruit data
 INSERT INTO "fruits" ("name", "current_price")

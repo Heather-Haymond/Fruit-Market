@@ -4,6 +4,8 @@ import LogOutButton from "../LogOutButton/LogOutButton";
 import Inventory from "../Inventory/Inventory";
 import PriceUpdater from "../PriceUpdater/PriceUpdater";
 import BuyButton from "../BuyButton/BuyButton";
+import AverageTotal from '../AverageTotal/AverageTotal';
+import FruitsList from '../FruitsList/FruitsList';
 
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -12,6 +14,22 @@ const capitalizeFirstLetter = (string) => {
 const replaceUnderscoreWithSpace = (string) => {
   return string.replace(/_/g, " ");
 };
+const getFruitQuantities = (inventory) => {
+  if (!Array.isArray(inventory)) {
+    console.error("Expected inventory to be an array but got:", inventory);
+    return {}; // Return an empty object if inventory is not an array
+  }
+  const quantities = {};
+  inventory.forEach((item) => {
+    if (quantities[item.fruit_id]) {
+      quantities[item.fruit_id] += item.quantity;
+    } else {
+      quantities[item.fruit_id] = item.quantity;
+    }
+  });
+  return quantities;
+};
+
 
 const Market = () => {
   const dispatch = useDispatch();
@@ -40,20 +58,23 @@ const Market = () => {
     return <div>Error: {error}</div>;
   }
 
-  if (!fruits) {
+  if (!fruits || Object.keys(fruits).length === 0) {
     return <div>Loading fruits...</div>;
   }
 
   const hasFruits =
     fruits && typeof fruits === "object" && Object.keys(fruits).length > 0;
 
+    const fruitQuantities = Array.isArray(inventory) ? getFruitQuantities(inventory) : {};
+
   return (
     <div className="container">
       <h2>Welcome, {user.username}!</h2>
       {/* <p>Your ID is: {user.id}</p> */}
-      <PriceUpdater onPricesUpdate={handlePricesUpdate} />
+      {/* <PriceUpdater onPricesUpdate={handlePricesUpdate} /> */}
       {/* <Wallet /> */}
       <h3>Fruit Market</h3>
+      {/* <FruitsList />  */}
       {error ? (
         <p>Error: {error}</p>
       ) : hasFruits ? (
@@ -64,9 +85,10 @@ const Market = () => {
                 <li key={key}>
                   <p>
                     {capitalizeFirstLetter(
-                      replaceUnderscoreWithSpace(fruit.name)
+                      replaceUnderscoreWithSpace(fruit.name|| "")
                     )}
                     : ${parseFloat(fruit.current_price)?.toFixed(2)}
+                    (Quantity: {fruitQuantities[fruit.id] || 0})
                     <BuyButton fruit={fruit} />
                   </p>
                 </li>
@@ -77,6 +99,7 @@ const Market = () => {
         <p>No fruits available</p>
       )}
       <Inventory inventory={inventory} />
+      <AverageTotal /> 
       <LogOutButton className="btn" />
     </div>
   );
