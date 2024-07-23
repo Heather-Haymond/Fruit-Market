@@ -1,6 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../modules/pool");
+const { calculateQuantityById } = require('../../src/utils/quantityFruitID');
+
+// Route to get aggregated fruit quantities
+router.get('/fruits/quantities', async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const result = await client.query('SELECT fruit_id, quantity FROM inventory');
+    const fruits = result.rows;
+
+    // Use the utility function to aggregate quantities
+    const aggregatedQuantities = calculateQuantityById(fruits);
+
+    res.json(aggregatedQuantities);
+  } catch (error) {
+    console.error('Error fetching fruit quantities:', error);
+    res.status(500).json({ error: 'Failed to fetch fruit quantities', details: error.message });
+  } finally {
+    client.release();
+  }
+});
 
 // Fetch inventory with fruit details
 router.get("/inventory", async (req, res) => {
@@ -27,7 +48,7 @@ router.get("/inventory", async (req, res) => {
 
 // Update all fruit prices
 
-router.put("/fruits/prices", (req, res) => {
+router.put("/fruits/prices", async (req, res) => {
   const queryText = ` 
   UPDATE fruits 
   SET current_price =
@@ -39,27 +60,26 @@ router.put("/fruits/prices", (req, res) => {
   RETURNING id, name, current_price; 
   `;
 
-  pool
-    .query(queryText)
-    .then((result) => {
-      console.log(`Updated price for fruits`);
+  
+  try {
+    const result = await pool.query(queryText);
+    console.log(`Updated price for fruits`);
       res.status(200).json(result.rows);
-    })
-    .catch((error) => {
+    }catch(error) {
       console.error(`Error updating price for fruits`, error);
       res.status(500).json({ error: "Internal Server Error" });
-    });
+    };
 });
 
 // Fetch all fruits
-router.get("/", (req, res) => {
-  pool
-    .query("SELECT * FROM fruits")
-    .then((result) => res.send(result.rows))
-    .catch((error) => {
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM fruits");
+    res.status(200).json(result.rows);
+  }catch (error) {
       console.error("Error fetching fruits", error);
       res.sendStatus(500);
-    });
+    };
 });
 
 module.exports = router;

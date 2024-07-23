@@ -11,6 +11,7 @@ const passport = require('./strategies/user.strategy');
 const userRouter = require('./routes/user.router');
 const fruitRouter = require('./routes/fruit.router'); 
 const inventoryRouter = require('./routes/inventory.router');
+const transactionsRouter = require('./routes/transactions.router');
 
 // Express Middleware
 app.use(express.json());
@@ -28,6 +29,7 @@ app.use(passport.session());
 app.use('/api/user', userRouter);
 app.use('/api/fruits', fruitRouter); 
 app.use('/api/inventory', inventoryRouter);
+app.use('/api/transactions', transactionsRouter);
 
 // Listen Server & Port
 app.listen(PORT, () => {

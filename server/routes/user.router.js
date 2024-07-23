@@ -21,6 +21,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
     .then((result) => {
       if (result.rows.length === 0) {
         // User not found
+        console.log('Fetched user data:', result.rows[0]);
         return res.sendStatus(404);
       }
       res.send(result.rows[0]);

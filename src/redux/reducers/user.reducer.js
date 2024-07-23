@@ -1,7 +1,7 @@
 const initialState = {
   id: null,
   username: '',
-  total_cash: '100.00',
+  total_cash: 100.00,
   error: null,
 };
 const userReducer = (state = initialState, action) => {
