@@ -2,35 +2,31 @@ import React from "react";
 import SellButton from "../SellButton/SellButton";
 
 const InventoryItem = ({ fruit, user }) => {
+  console.log("Received fruit data:", fruit);
+  console.log("Received user data:", user);
+
   if (!user || !user.id) {
     console.error('User is not defined or user.id is missing in InventoryItem');
     return <div>Error: User is not defined</div>;
   }
-  if (!fruit || !Array.isArray(fruit.purchasePrices)) {
-    console.error('Invalid fruit data in InventoryItem');
-    return <div>Error: Invalid fruit data</div>;
-  }
-  if (!Array.isArray(fruit.purchasePrices)) {
-    console.error('purchasePrices is not an array in InventoryItem:', fruit.purchasePrices);
-    return <div>Error: Invalid purchase prices data</div>;
-  }
+  
+  // if (!Array.isArray(fruit.items)) {
+  //   console.error(' is not an array in InventoryItem:', fruit);
+  //   return <div>Error: Invalid purchase prices data</div>;
+  // }
+
   return (
     <div className="inventory-item">
-      <h3>{fruit.name}</h3>
       <ul>
-        {fruit.purchasePrices.map((price, index) => (
-          <li key={index}>
-            Total Quantity: {fruit.totalQuantity || 'N/A'}, 
-            Price: ${price.toFixed(2)}
+          <li>
+            Price: ${fruit.purchase_price.toFixed(2)}
             <SellButton 
               fruit_id={fruit.id} 
-              quantity={fruit.totalQuantity}
-              purchase_price={price} 
+              purchase_price={fruit.purchase_price} 
               user_id={user.id}  
               text="Sell" 
             />
           </li>
-        ))}
       </ul>
     </div>
   );

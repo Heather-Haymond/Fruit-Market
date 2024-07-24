@@ -29,13 +29,13 @@ const Inventory = () => {
         groupedInventory.map((group) => (
           <div key={group.id} className="category">
             <h4>{group.name}</h4>
-            {group.items.map((item, index) => (
+            {group.items.map((fruit, index) => (
               <InventoryItem
-                key={index} // Use a unique key for each InventoryItem
+                key={fruit.id || index} // Use a unique key for each InventoryItem
                 fruit={{
                   id: group.id,
                   name: group.name,
-                  purchase_price: item.purchase_price,
+                  purchase_price: fruit.purchase_price,
           
                 }}
                 user={user}
@@ -51,3 +51,28 @@ const Inventory = () => {
 };
 
 export default Inventory;
+
+
+
+// const getFruitQuantities = (inventory) => {
+//   if (!Array.isArray(inventory)) {
+//     console.error("Expected inventory to be an array but got:", inventory);
+//     return {}; // Return an empty object if inventory is not an array
+//   }
+//   const quantities = {};
+//   inventory.forEach((item) => {
+//     if (quantities[item.fruit_id]) {
+//       quantities[item.fruit_id] += item.quantity;
+//     } else {
+//       quantities[item.fruit_id] = item.quantity;
+//     }
+//   });
+//   return quantities;
+// };
+
+// const fruitQuantities = Array.isArray(inventory) ? getFruitQuantities(inventory) : {};
+
+// (Quantity: {fruitQuantities[fruit.id] || 0})
+
+
+{/* Total Quantity: {fruit.totalQuantity || 'N/A'}, -- taked out of aggregatedData */}

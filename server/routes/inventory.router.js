@@ -10,6 +10,7 @@ router.get('/', async (req, res) => {
       SELECT 
         i.id AS inventory_id,
         u.username,
+        f.id AS fruit_id, 
         f.name AS fruit_name,
         i.quantity,
         i.purchase_price
@@ -24,6 +25,7 @@ router.get('/', async (req, res) => {
     const formattedRows = result.rows.map(row => ({
       inventory_id: row.inventory_id,
       username: row.username,
+      fruit_id: row.fruit_id,
       fruit_name: row.fruit_name,
       quantity: row.quantity,
       purchase_price: parseFloat(row.purchase_price)
@@ -33,6 +35,29 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Error fetching inventory:', error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Fetch inventory for a user
+router.get('/user/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const result = await pool.query(
+      `SELECT 
+          f.id AS fruit_id, 
+          f.name AS fruit_name, 
+          i.quantity, 
+          i.purchase_price
+       FROM inventory i
+       JOIN fruits f ON i.fruit_id = f.id
+       WHERE i.user_id = $1`,
+      [userId]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching user inventory:', error);
+    res.status(500).json({ error: 'Failed to fetch user inventory' });
   }
 });
 

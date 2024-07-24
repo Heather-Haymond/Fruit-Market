@@ -74,7 +74,8 @@ router.put("/fruits/prices", async (req, res) => {
 // Fetch all fruits
 router.get("/", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM fruits");
+    const result = await pool.query(
+      "SELECT * FROM fruits");
     res.status(200).json(result.rows);
   }catch (error) {
       console.error("Error fetching fruits", error);
