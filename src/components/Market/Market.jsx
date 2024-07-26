@@ -30,13 +30,12 @@ const Market = () => {
   };
 
   useEffect(() => {
-    console.log("Dispatching FETCH_FRUITS");
+    // console.log("Dispatching FETCH_FRUITS");
     dispatch({ type: "FETCH_FRUITS" });
+    // console.log("Fruits in MarketPlace:", fruits);
+    // console.log("Type of fruits:", typeof fruits);
+    // console.log("Is fruits an array?:", Array.isArray(fruits));
   }, [dispatch]);
-
-  console.log("Fruits in MarketPlace:", fruits);
-  console.log("Inventory:", inventory);
-  console.log("Error in MarketPlace:", error);
 
   if (error) {
     return <div>Error: {error}</div>;

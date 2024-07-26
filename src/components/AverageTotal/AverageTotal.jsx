@@ -1,6 +1,7 @@
-import React from 'react';
-import useFetchInventory from '../../hooks/useFetchInventory';
-
+import React from "react";
+import useFetchInventory from "../../hooks/useFetchInventory";
+import { groupByFruitId } from "../../utils/aggregateData";
+import AverageTotalItem from "./AverageTotalItem";
 
 const AverageTotal = () => {
   const { inventory, error } = useFetchInventory();
@@ -8,25 +9,43 @@ const AverageTotal = () => {
 
   if (error) return <div>Error: {error}</div>;
 
-  const calculateTotal = () => {
-    return inventory.reduce((total, fruit) => 
-      total + fruit.total_quantity * fruit.average_purchase_price, 0
-    ).toFixed(2);
-  };
-
-  const calculateAveragePrice = () => {
-    const totalFruits = inventory.reduce((sum, fruit) => sum + fruit.quantity, 0);
-    if (totalFruits === 0) return 'N/A';
-    const totalValue = inventory.reduce((sum, fruit) => 
-      sum + fruit.total_quantity * fruit.average_purchase_price, 0
-    );
-    return (totalValue / totalFruits).toFixed(2);
-  };
+  const groupedInventory = groupByFruitId(inventory);
 
   return (
     <div>
-      <p>Total Inventory Value: ${calculateTotal()}</p>
-      <p>Average Price per Fruit: ${calculateAveragePrice()}</p>
+      <h2>Average Total Summary</h2>
+      {groupedInventory.map((fruitGroup) => (
+        <AverageTotalItem key={fruitGroup.id} fruitGroup={fruitGroup} />
+      ))}
+      <div className="total-summary">
+        <p>
+          Total Inventory Value: $
+          {groupedInventory
+            .reduce(
+              (total, fruitGroup) => total + fruitGroup.totalPurchasePrice,
+              0
+            )
+            .toFixed(2)}
+        </p>
+        <p>
+          Average Price per Fruit $
+          {(() => {
+            const totalFruits = groupedInventory.reduce(
+              (sum, fruitGroup) => sum + fruitGroup.totalQuantity,
+              0
+            );
+            if (totalFruits === 0) return "N/A";
+            const totalValue = groupedInventory.reduce(
+              (sum, fruitGroup) =>
+                sum +
+                parseFloat(fruitGroup.averagePurchasePrice) *
+                  fruitGroup.totalQuantity,
+              0
+            );
+            return (totalValue / totalFruits).toFixed(2);
+          })()}
+        </p>
+      </div>
     </div>
   );
 };

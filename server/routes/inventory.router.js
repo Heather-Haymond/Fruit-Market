@@ -9,6 +9,7 @@ router.get('/', async (req, res) => {
     const result = await pool.query(`
       SELECT 
         i.id AS inventory_id,
+        u.id AS user_id, 
         u.username,
         f.id AS fruit_id, 
         f.name AS fruit_name,
@@ -24,6 +25,7 @@ router.get('/', async (req, res) => {
 
     const formattedRows = result.rows.map(row => ({
       inventory_id: row.inventory_id,
+      user_id: row.user_id,
       username: row.username,
       fruit_id: row.fruit_id,
       fruit_name: row.fruit_name,

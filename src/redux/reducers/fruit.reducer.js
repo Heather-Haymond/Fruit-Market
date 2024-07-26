@@ -1,14 +1,15 @@
 const initialState = {
-  fruits: [],
-  error: null,
-  userCash: 100.00,
-};
-
+fruits: [],                   // add images here:fruits: [
+  error: null,                // { id: 1, name: 'Apple', purchase_price: 1.99, imageName: 'apple' },
+  userCash: 100.00,            // { id: 2, name: 'Orange', purchase_price: 2.49, imageName: 'orange' },
+};                              //],
+                               
+  
 const fruitReducer = (state = initialState, action) => {
-  console.log('fruitReducer called with action:', action);
+  // console.log('fruitReducer called with action:', action);
   switch (action.type) {
     case "SET_FRUITS":
-      console.log('SET_FRUITS payload:', action.payload);
+      // console.log('SET_FRUITS payload:', action.payload);
       return {
         ...state,
         ...action.payload,

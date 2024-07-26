@@ -81,7 +81,7 @@ if (isNaN(numericQuantity)) {
 });
 
 // Sell Route
-router.post('/sell', async (req, res) => {
+router.post('/api/transactions/sell', async (req, res) => {
   const { user_id, fruit_id, quantity } = req.body;
 
   if (!user_id || !fruit_id || !quantity || quantity <= 0) {

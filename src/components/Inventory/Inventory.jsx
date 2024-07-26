@@ -8,11 +8,10 @@ const Inventory = () => {
   const user = useSelector((state) => state.user);
   const { inventory = [], error } = useFetchInventory(); 
 
-  console.log('User in Inventory:', user);
-  console.log('Inventory:', inventory);
-
+  // console.log('User in Inventory:', user);
+  // console.log("inventory is an", typeof inventory);
   if (inventory && inventory.length > 0) {
-    console.log('Type of purchase_price for first item:', typeof inventory[0]?.purchase_price);
+    // console.log('Type of purchase_price for first item:', typeof inventory[0]?.purchase_price);
   }
 
   if (error) return <div>Error: {error}</div>;
