@@ -1,8 +1,18 @@
 export const groupByFruitId = (inventory) => {
   if (!Array.isArray(inventory)) {
     console.error('Expected inventory to be an array:', inventory);
-  return {};
-  }
+    return inventory.reduce((acc, item) => {
+      if (!acc[item.fruit_id]) {
+        acc[item.fruit_id] = {
+          id: item.fruit_id,
+          name: item.fruit_name,
+          items: [],
+        };
+      }
+      acc[item.fruit_id].items.push(item);
+      return acc;
+    }, {});
+  };
 
   const grouped = {};
   inventory.forEach((fruitItem) => {
@@ -12,6 +22,11 @@ export const groupByFruitId = (inventory) => {
     // console.log("Value of fruit_id:", fruit_id);
     // console.log("Type of fruit_name:", typeof fruit_name);
     // console.log("Value of fruit_name:", fruit_name);
+
+    if (fruit_id === undefined || fruit_id === null) {
+      console.error("Invalid fruit_id:", fruit_id);
+      return;
+    }
     if (!grouped[fruit_id]) {
       grouped[fruit_id] = {
         id: fruit_id,
@@ -39,7 +54,11 @@ export const groupByFruitId = (inventory) => {
   
   // Calculate the average purchase price for each fruit group
   Object.values(grouped).forEach((group) => {
+    if (group.totalQuantity > 0) {
     group.averagePurchasePrice = (group.totalPurchasePrice / group.totalQuantity).toFixed(2);
+  } else {
+    group.averagePurchasePrice = "0.00";
+  }
   });
 // console.log(" grouping:", typeof inventory);
   return Object.values(grouped);

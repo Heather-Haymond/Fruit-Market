@@ -4,9 +4,14 @@ import axios from 'axios';
   
   function* sellSaga(action) {
       try {
-        const { fruit_id, purchase_price, user_id  } = action.payload;
-        console.log('Sell fruit payload:', { fruit_id, purchase_price, user_id });
-        const response = yield call(axios.post,  '/api/transactions/sell', action.payload);
+        const { fruit_id, user_id } = action.payload;
+        const quantity = 1; 
+        console.log('Sell fruit payload:', { fruit_id, user_id, quantity });
+        const response = yield call(axios.post,  '/api/transactions/sell',{
+        user_id,
+        fruit_id,
+        quantity
+      });
         console.log('Sell fruit response:', response.data);
         yield put({ type: 'SELL_FRUIT_SUCCESS', payload: response.data });
       } catch (error) {

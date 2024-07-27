@@ -71,7 +71,7 @@ function App() {
           <PriceUpdater />
         </ProtectedRoute>
         <ProtectedRoute exact path="/all-users-inventory">
-            <AllUsersInventory /> 
+            <AllUsersInventory currentUser={user} /> 
           </ProtectedRoute>
           {/* For protected routes, the view could show one of several things on the same route.
             Visiting localhost:5173/user will show the UserPage if the user is logged in.
@@ -90,7 +90,7 @@ function App() {
             exact
             path="/info"
           >
-            <AllUsersInventory />
+            <AllUsersInventory currentUser={user} />
           </ProtectedRoute>
 
           <Route

@@ -48,13 +48,15 @@ if (isNaN(numericQuantity)) {
     // Calculate new total cash
     let newTotalCash = currentCash - parseFloat(totalPurchasePrice);
 
-    // Ensure cash is capped at $100
-    newTotalCash = Math.min(newTotalCash, 100);
-
     // Check for sufficient funds
     if (newTotalCash < 0) {
       throw new Error('Insufficient funds');
     }
+
+     // If inventory is zero, reset cash to $100
+    //  if (totalInventoryQuantity === 0) {
+    //   newTotalCash = 100;
+    // }
 
     // Update total cash
     await client.query(
@@ -80,176 +82,112 @@ if (isNaN(numericQuantity)) {
   }
 });
 
+// Helper Functions-sell
+const getInventoryItem = async (client, user_id, fruit_id) => {
+  const res = await client.query( `
+  SELECT * FROM inventory 
+  WHERE user_id = $1 AND fruit_id = $2`, 
+  [user_id, fruit_id]
+  );
+  return res.rows[0];
+};
+
+const updateInventory = async (client, user_id, fruit_id, quantity) => {
+  await client.query(`
+  UPDATE inventory 
+  SET quantity = $1 
+  WHERE user_id = $2 AND fruit_id = $3`, 
+  [quantity, user_id, fruit_id]
+  );
+};
+
+const deleteInventoryItem = async (client, user_id, fruit_id) => {
+  await client.query( `
+    DELETE FROM inventory
+    WHERE user_id = $1 AND fruit_id = $2`,
+    [user_id, fruit_id]
+    );
+};
+
+const getTotalCash = async (client, user_id) => {
+  const res = await client.query( `
+    SELECT total_cash
+    FROM "user"
+    WHERE id = $1`,
+    [user_id]
+    );
+  return res.rows[0];
+};
+
+const updateTotalCash = async (client, user_id, total_cash) => {
+  await client.query( `
+    UPDATE "user"
+    SET total_cash = $1
+    WHERE id = $2`,
+    [total_cash, user_id]
+    );
+};
+
+
 // Sell Route
-router.post('/api/transactions/sell', async (req, res) => {
+router.post('/sell', async (req, res) => {
+  console.log('Request body:', req.body);
   const { user_id, fruit_id, quantity } = req.body;
 
   if (!user_id || !fruit_id || !quantity || quantity <= 0) {
+    console.error('Missing required fields');
     return res.status(400).json({ error: 'Missing or invalid required fields' });
   }
 
   const client = await pool.connect();
-
   try {
     await client.query('BEGIN');
 
-    // Get the inventory item
-    const inventoryItemResult = await client.query(
-      'SELECT * FROM inventory WHERE user_id = $1 AND fruit_id = $2',
-      [user_id, fruit_id]
-    );
+        // Get the inventory item
+        const inventoryItem = await getInventoryItem(client, user_id, fruit_id);
 
-    if (inventoryItemResult.rows.length === 0) {
-      throw new Error('Inventory item not found');
-    }
-
-    const inventoryItem = inventoryItemResult.rows[0];
-    const updatedQuantity = inventoryItem.quantity - quantity;
-
-    if (updatedQuantity > 0) {
-      await client.query(
-        'UPDATE inventory SET quantity = $1 WHERE user_id = $2 AND fruit_id = $3',
-        [updatedQuantity, user_id, fruit_id]
-      );
-    } else {
-      await client.query(
-        'DELETE FROM inventory WHERE user_id = $1 AND fruit_id = $2',
-        [user_id, fruit_id]
-      );
-    }
-
-    // Get the current cash
-    const totalCashResult = await client.query(
-      'SELECT total_cash FROM "user" WHERE id = $1',
-      [user_id]
-    );
-
-    const totalCash = parseFloat(totalCashResult.rows[0].total_cash) || 0;
-    const purchasePrice = parseFloat(inventoryItem.purchase_price);
-
-    // Calculate new total cash
-    let newTotalCash = totalCash + (quantity * purchasePrice);
-
-    // Ensure cash is capped at $100
-    newTotalCash = Math.min(newTotalCash, 100);
-
-    // Update total cash
-    await client.query(
-      'UPDATE "user" SET total_cash = $1 WHERE id = $2',
-      [newTotalCash.toFixed(2), user_id]
-    );
-
-    await client.query('COMMIT');
-    res.json({ newTotalCash: formatCash(newTotalCash) });
-
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error selling item from inventory:', error);
-    res.status(500).json({ error: 'Error selling item from inventory', details: error.message });
-  } finally {
-    client.release();
-  }
-});
+        if (!inventoryItem) {
+          throw new Error('Inventory item not found');
+        }
+    
+        const updatedQuantity = inventoryItem.quantity - quantity;
+    
+        if (updatedQuantity > 0) {
+          await updateInventory(client, user_id, fruit_id, updatedQuantity);
+        } else {
+          await deleteInventoryItem(client, user_id, fruit_id);
+        }
+    
+        // Get the current cash
+        const totalCash = await getTotalCash(client, user_id);
+        const purchasePrice = parseFloat(inventoryItem.purchase_price);
+    
+        // Calculate new total cash
+        let newTotalCash = parseFloat(totalCash.total_cash) + (quantity * purchasePrice);
+    
+        // Ensure cash is capped at $100
+        newTotalCash = Math.min(newTotalCash, 100);
+    
+        // Update total cash
+        await updateTotalCash(client, user_id, newTotalCash);
+    
+        await client.query('COMMIT');
+        res.json({ newTotalCash: formatCash(newTotalCash) });
+    
+      } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error selling item from inventory:', error.stack);
+        res.status(500).json({ error: 'Error selling item from inventory', details: error.message });
+      } finally {
+        client.release();
+      }
+    });
+    
 
 // Helper Functions
 const formatCash = (cash) => {
   return `$${parseFloat(cash).toFixed(2)}`;
 };
 
-// Helper Functions 
-
-// get inventory item 
-
-const getInventoryItem = async (client, userId, fruitId) => { 
-
-  const query = ` 
-  
-  SELECT quantity, purchase_price  
-  
-  FROM inventory  
-  
-  WHERE user_id = $1 AND fruit_id = $2 
-  
-  ORDER BY purchase_price ASC 
-  
-  `; 
-  
-  const result = await client.query(query, [userId, fruitId]); 
-  
-  return result.rows[0]; 
-  
-  }; 
-  
-  // update inventory 
-  
-  const updateInventory = async (client, userId, fruitId, updatedQuantity) => { 
-  
-  const query = ` 
-  
-  UPDATE inventory  
-  
-  SET quantity = $1  
-  
-  WHERE user_id = $2 AND fruit_id = $3; 
-  
-  `; 
-  
-  await client.query(query, [updatedQuantity, userId, fruitId]); 
-  
-  }; 
-  
-  // delete inventory item 
-  
-  const deleteInventoryItem = async (client, userId, fruitId) => { 
-  
-  const query = ` 
-  
-  DELETE FROM inventory  
-  
-  WHERE user_id = $1 AND fruit_id = $2; 
-  
-  `; 
-  
-  await client.query(query, [userId, fruitId]); 
-  
-  }; 
-  
-  //get user cash 
-  
-  const getTotalCash = async (client, userId) => { 
-  
-  const query = ` 
-  
-  SELECT total_cash  
-  
-  FROM "user"  
-  
-  WHERE id = $1; 
-  
-  `; 
-  
-  const result = await client.query(query, [userId]); 
-  
-  return result.rows[0]; 
-  
-  }; 
-  
-  // update user cash 
-  
-  const updateTotalCash = async (client, userId, newTotalCash) => { 
-  
-  const query = ` 
-  
-  UPDATE "user"  
-  
-  SET total_cash = $1  
-  
-  WHERE id = $2; 
-  
-  `; 
-  
-  await client.query(query, [parseFloat(newTotalCash).toFixed(2), userId]); 
-  
-  }; 
 
 module.exports = router;

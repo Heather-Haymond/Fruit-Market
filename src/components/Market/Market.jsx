@@ -100,7 +100,7 @@ const Market = () => {
       } */}
 
       {/* <AverageTotal />  */}
-      <AllUsersInventory />
+      <AllUsersInventory currentUser={user} />
       <LogOutButton className="btn" />
     </div>
   );

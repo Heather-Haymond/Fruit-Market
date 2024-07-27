@@ -3,7 +3,7 @@ import useFetchAllInventories from '../../hooks/useFetchAllInventories';
 import { groupByFruitId } from "../../utils/aggregateData"; 
 import InventoryItem from './InventoryItem';
 
-const AllUsersInventory = () => {
+const AllUsersInventory = ({ currentUser }) => {
   const { inventories, error } = useFetchAllInventories();
   console.log("Fetched inventories:", inventories);
 
@@ -32,19 +32,33 @@ const AllUsersInventory = () => {
          console.log("Rendering user:", user);
         const groupedInventory = groupByFruitId(user.inventory);
         return (
-          <div key={user.id}>
+          <div key={`user-${user.id}`}>
             <h4>User: {user.username}</h4>
             {Object.values(groupedInventory).length > 0 ? (
               Object.values(groupedInventory).map((group) => (
-                <div key={group.id} className="category">
+                <div key={`group-${group.id}`} className="category">
                   <h5>{group.name}</h5>
-                  {group.items.map((item) => (
-                    <InventoryItem 
-                    key={item.id} // Ensure each InventoryItem has a unique key
-                    fruit={item}
-                    user={{ id: user.id }} 
-                  />
-                  ))}
+                  {group.items.map((item, index) => {
+                    const key = item.inventory_id 
+                      ? `item-${item.inventory_id}` 
+                      : `user-${user.id}-group-${group.id}-index-${index}`;
+                    
+                    if (!item.inventory_id) {
+                      console.log('Inventory item with undefined inventory_id:', item);
+                    }
+                    return (
+                      <InventoryItem 
+                      key={key}  
+                        fruit={{ 
+                          id: group.id,
+                          purchase_price: item.purchase_price, 
+                          fruit_name: group.name 
+                        }}
+                        user={{ id: user.id }} 
+                        currentUser={currentUser}
+                      />
+                    );
+                  })}
                 </div>
               ))
             ) : (
