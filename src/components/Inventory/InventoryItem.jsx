@@ -2,15 +2,14 @@ import React from "react";
 import SellButton from "../SellButton/SellButton";
 
 const InventoryItem = ({ fruit, user }) => {
-  // console.log("User ID:", user.id);
-  // console.log("Received fruit data:", fruit);
-  // console.log("Received user data:", user);
+  console.log("User ID:", user.id);
+  console.log("Received fruit data:", fruit);
+  console.log("Received user data:", user);
 
   if (!user || !user.id) {
     console.error('User is not defined or user.id is missing in InventoryItem');
     return <div>Error: User is not defined</div>;
   }
-  
 
   return (
     <div className="inventory-item">

@@ -24,6 +24,7 @@ import Market from '../Market/Market';
 import Wallet from '../Wallet/Wallet'; 
 import AverageTotal from '../AverageTotal/AverageTotal';
 import PriceUpdater from '../PriceUpdater/PriceUpdater';
+import AllUsersInventory from '../Inventory/AllUsersInventory';
 
 import './App.css';
 
@@ -69,8 +70,9 @@ function App() {
           <ProtectedRoute exact path="/price-updater">
           <PriceUpdater />
         </ProtectedRoute>
-
-
+        <ProtectedRoute exact path="/all-users-inventory">
+            <AllUsersInventory /> 
+          </ProtectedRoute>
           {/* For protected routes, the view could show one of several things on the same route.
             Visiting localhost:5173/user will show the UserPage if the user is logged in.
             If the user is not logged in, the ProtectedRoute will show the LoginPage (component).
@@ -88,7 +90,7 @@ function App() {
             exact
             path="/info"
           >
-            <Inventory />
+            <AllUsersInventory />
           </ProtectedRoute>
 
           <Route

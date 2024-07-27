@@ -1,4 +1,9 @@
 export const groupByFruitId = (inventory) => {
+  if (!Array.isArray(inventory)) {
+    console.error('Expected inventory to be an array:', inventory);
+    return {}; // return an empty object if the input is not valid
+  }
+
   const grouped = {};
   inventory.forEach((fruitItem) => {
     const { inventory_id, fruit_id, fruit_name, purchase_price } = fruitItem;

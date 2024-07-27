@@ -1,47 +1,105 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const pool = require('../modules/pool'); 
+const pool = require("../modules/pool");
+
+// // GET all inventory (not grouped)
+// router.get('/', async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       SELECT
+//         i.id AS inventory_id,
+//         u.id AS user_id,
+//         u.username,
+//         f.id AS fruit_id,
+//         f.name AS fruit_name,
+//         i.quantity,
+//         i.purchase_price
+//       FROM
+//         inventory i
+//       JOIN
+//         "user" u ON i.user_id = u.id
+//       JOIN
+//         fruits f ON i.fruit_id = f.id;
+//     `);
+
+//     const formattedRows = result.rows.map(row => ({
+//       inventory_id: row.inventory_id,
+//       user_id: row.user_id,
+//       username: row.username,
+//       fruit_id: row.fruit_id,
+//       fruit_name: row.fruit_name,
+//       quantity: row.quantity,
+//       purchase_price: parseFloat(row.purchase_price)
+//     }));
+//     console.log('Formatted Rows:', formattedRows);
+//     res.json(formattedRows);
+//   } catch (error) {
+//     console.error('Error fetching inventory:', error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+// Function to group inventory by user
+const groupByUser = (rows) => {
+  const grouped = {};
+
+  rows.forEach((item) => {
+    const { user_id, username, fruit_id, fruit_name, purchase_price, quantity } = item;
+
+    if (!grouped[user_id]) {
+      grouped[user_id] = {
+        user_id,
+        username,
+        inventory: []
+      };
+    }
+
+    grouped[user_id].inventory.push({
+      fruit_id,
+      fruit_name,
+      quantity,
+      purchase_price: parseFloat(purchase_price) || 0
+    });
+  });
+
+  return Object.values(grouped);
+};
 
 
-// GET all inventory
-router.get('/', async (req, res) => {
+
+// GET all users inventory
+
+router.get("/", async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT 
-        i.id AS inventory_id,
-        u.id AS user_id, 
-        u.username,
-        f.id AS fruit_id, 
-        f.name AS fruit_name,
-        i.quantity,
-        i.purchase_price
-      FROM 
-        inventory i
-      JOIN 
-        "user" u ON i.user_id = u.id
-      JOIN 
-        fruits f ON i.fruit_id = f.id;
-    `);
+    const result = await pool.query(` 
+  SELECT  
+    i.id AS inventory_id, 
+    u.id AS user_id,  
+    u.username, 
+    f.id AS fruit_id,  
+    f.name AS fruit_name, 
+    i.quantity, 
+    i.purchase_price 
+  FROM  
+    inventory i 
+  JOIN  
+    "user" u ON i.user_id = u.id 
+  JOIN  
+    fruits f ON i.fruit_id = f.id; 
+  `);
 
-    const formattedRows = result.rows.map(row => ({
-      inventory_id: row.inventory_id,
-      user_id: row.user_id,
-      username: row.username,
-      fruit_id: row.fruit_id,
-      fruit_name: row.fruit_name,
-      quantity: row.quantity,
-      purchase_price: parseFloat(row.purchase_price)
-    }));
-    console.log('Formatted Rows:', formattedRows);
-    res.json(formattedRows);
+    // Format and group inventory data by user ID
+    const groupedInventory = groupByUser(result.rows);
+    res.json(groupedInventory);
   } catch (error) {
-    console.error('Error fetching inventory:', error);
+    console.error("Error fetching all users inventory:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// Fetch inventory for a user
-router.get('/user/:userId', async (req, res) => {
+
+// Fetch inventory for specific a user
+router.get("/user/:userId", async (req, res) => {
   const userId = req.params.userId;
   try {
     const result = await pool.query(
@@ -58,63 +116,14 @@ router.get('/user/:userId', async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching user inventory:', error);
-    res.status(500).json({ error: 'Failed to fetch user inventory' });
+    console.error("Error fetching user inventory:", error);
+    res.status(500).json({ error: "Failed to fetch user inventory" });
   }
 });
 
 module.exports = router;
 
 
-// //buy
-// router.post('/buy', async (req, res) => {
-//   const { user_id, fruit_id, quantity, purchase_price } = req.body;
-
-//   if (!user_id || !fruit_id || !quantity || !purchase_price) {
-//     return res.status(400).json({ error: 'Missing required fields' });
-//   }
-//   const formattedPrice = parseFloat(purchase_price).toFixed(2);
-//   const client = await pool.connect();
-
-//   try {
-//     await client.query("BEGIN");
-//     const inventoryResult = await client.query(
-//       `INSERT INTO inventory (user_id, fruit_id, quantity, purchase_price) 
-//        VALUES ($1, $2, $3, $4) 
-//        RETURNING *`,
-//       [user_id, fruit_id, quantity, formattedPrice]
-//     );
-//     const totalPurchasePrice = (quantity * parseFloat(purchase_price)).toFixed(
-//       2
-//     );
-//     const currentCashResult = await client.query(
-//       'SELECT total_cash FROM "user" WHERE id = $1',
-//       [user_id]
-//     );
-//     const currentCash = parseFloat(currentCashResult.rows[0].total_cash) || 0;
-//     const newTotalCash = (currentCash - parseFloat(totalPurchasePrice)).toFixed(
-//       2
-//     );
-
-//     if (parseFloat(newTotalCash) < 0) {
-//       throw new Error("Insufficient funds");
-//     }
-//     await client.query('UPDATE "user" SET total_cash = $1 WHERE id = $2', [
-//       newTotalCash,
-//       user_id,
-//     ]);
-//     await client.query("COMMIT");
-
-//     res.status(201).json({
-//       inventory: inventoryResult.rows[0],
-//       newTotalCash: newTotalCash,
-//     });
-//   } catch (error) {
-//     await client.query("ROLLBACK");
-//     console.error("Error buying fruit:", error);
-//     res.status(500).json({ error: "Failed to buy fruit" });
-//   }
-// });
 // //sell
 // router.post("/sell", async (req, res) => {
 //   const { user_id, fruit_id, quantity } = req.body;
@@ -129,15 +138,15 @@ module.exports = router;
 //   if (isNaN(userId) || isNaN(fruitId) || isNaN(qty)) {
 //     return res.status(400).json({ error: "Invalid input values" });
 //   }
-  
+
 //   const client = await pool.connect();
 
 //   try {
 //     await client.query("BEGIN");
 
 //     const inventoryQuery = `
-//   SELECT quantity, purchase_price 
-//   FROM inventory 
+//   SELECT quantity, purchase_price
+//   FROM inventory
 //   WHERE user_id = $1 AND fruit_id = $2
 //   ORDER BY purchase_price ASC
 // `;
@@ -151,8 +160,8 @@ module.exports = router;
 
 //     if (updatedQuantity > 0) {
 //       const updateInventoryQuery = `
-//         UPDATE inventory 
-//         SET quantity = $1 
+//         UPDATE inventory
+//         SET quantity = $1
 //         WHERE user_id = $2 AND fruit_id = $3;
 //       `;
 //       await client.query(updateInventoryQuery, [
@@ -162,14 +171,14 @@ module.exports = router;
 //       ]);
 //     } else {
 //       const deleteInventoryQuery = `
-//         DELETE FROM inventory 
+//         DELETE FROM inventory
 //         WHERE user_id = $1 AND fruit_id = $2;
 //       `;
 //       await client.query(deleteInventoryQuery, [user_id, fruit_id]);
 //     }
 //     const totalCashQuery = `
-//       SELECT total_cash 
-//       FROM "user" 
+//       SELECT total_cash
+//       FROM "user"
 //       WHERE id = $1;
 //     `;
 
@@ -184,8 +193,8 @@ module.exports = router;
 //     const newTotalCash = totalCash + (quantity * purchasePrice);
 
 //     const updateCashQuery = `
-//       UPDATE "user" 
-//       SET total_cash = $1 
+//       UPDATE "user"
+//       SET total_cash = $1
 //       WHERE id = $2;
 //     `;
 //     await client.query(updateCashQuery, [newTotalCash.toFixed(2), user_id]);
@@ -201,7 +210,7 @@ module.exports = router;
 //   } catch (error) {
 //     await client.query("ROLLBACK");
 //     console.error("Error selling item from inventory:", error);
-//     if (!res.headersSent) 
+//     if (!res.headersSent)
 //     res.status(500).json({ error: "Error selling item from inventory" });
 //   } finally {
 //     client.release();
@@ -211,7 +220,7 @@ module.exports = router;
 // //total quantity and average purchase price for each fruit owned by each user.
 // router.get("/aggregated", async (req, res) => {
 //   const query = `
-//     SELECT 
+//     SELECT
 //       u.username,
 //       f.name AS fruit_name,
 //       SUM(i.quantity) AS total_quantity,
@@ -230,5 +239,3 @@ module.exports = router;
 //     res.sendStatus(500);
 //   }
 // });
-
-
