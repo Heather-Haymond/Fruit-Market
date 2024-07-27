@@ -1,7 +1,10 @@
 import React from 'react';
-import { groupByFruitId } from '../../utils/aggregateData';
+
 
 const AverageTotalItem = ({ fruitGroup }) => {
+  if (!fruitGroup) {
+    return <div>Error: No fruit group data available</div>;
+  }
   return (
     <div className="average-total-item">
       <h3>{fruitGroup.name}</h3>

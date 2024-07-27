@@ -1,35 +1,46 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
 
 const useUserInventory = () => {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  const inventory = useSelector((state) => state.inventory);
+ const [inventory, setInventory] = useState([]);
+ const [error, setError] = useState(null);
+  const userId = useSelector(state => state.user.id);
+  console.log('User ID:', userId); 
 
   useEffect(() => {
-    const fetchUserInventory = async () => {
+    if (!userId) {
+        console.error('User ID is not available');
+        return;
+      }
+    
+    const fetchInventory = async () => {
       try {
-        const response = await axios.get('/api/inventory/user', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        dispatch({
-          type: "SET_INVENTORY",
-          payload: response.data,
-        });
-      } catch (error) {
-        console.error('Error fetching user inventory:', error);
+        const response = await fetch(`/api/inventory/${userId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('API response data:', data);
+
+        // Check if data is an object or array and handle accordingly
+        if (Array.isArray(data)) {
+          setInventory(data);
+        } else if (typeof data === 'object' && data !== null) {
+          const userInventory = data[userId] || [];
+          setInventory(Array.isArray(userInventory) ? userInventory : []);
+        } else {
+          throw new Error('Unexpected data format');
+        }
+      } catch (err) {
+        console.error('Error fetching inventory:', err);
+        setError(err.message);
       }
     };
 
-    if (user.id) {
-      fetchUserInventory();
-    }
-  }, [dispatch, user.id]);
+    fetchInventory();
+  }, [userId]);
 
-  return inventory;
+  return { inventory, error };
 };
 
 export default useUserInventory;

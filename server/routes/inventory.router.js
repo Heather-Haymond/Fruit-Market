@@ -99,7 +99,7 @@ router.get("/", async (req, res) => {
 
 
 // Fetch inventory for specific a user
-router.get("/user/:userId", async (req, res) => {
+router.get('/:userId', async (req, res) => {
   const userId = req.params.userId;
   try {
     const result = await pool.query(

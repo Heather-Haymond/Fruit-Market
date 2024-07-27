@@ -15,12 +15,12 @@ const AllUsersInventory = () => {
     const inventory = Array.isArray(userInventory.inventory) ? userInventory.inventory : [];
     if (!acc[userInventory.user_id]) {
       acc[userInventory.user_id] = {
-        id: userInventory.user_id,
+         id: userInventory.user_id,
         username: userInventory.username,
         inventory: []
       };
     }
-    acc[userInventory.user_id].inventory.push(...inventory || []);
+    acc[userInventory.user_id].inventory.push(...userInventory.inventory || []);
 
     return acc;
   }, {});
@@ -40,7 +40,7 @@ const AllUsersInventory = () => {
                   <h5>{group.name}</h5>
                   {group.items.map((item) => (
                     <InventoryItem 
-                    key={item.id} 
+                    key={item.id} // Ensure each InventoryItem has a unique key
                     fruit={item}
                     user={{ id: user.id }} 
                   />

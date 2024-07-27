@@ -5,7 +5,7 @@ const useFetchAllInventories = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchInventories = async () => {
+    const fetchInventory = async () => {
       try {
         const response = await fetch('/api/inventory')
 
@@ -15,14 +15,14 @@ const useFetchAllInventories = () => {
 
         const data = await response.json();
         console.log('Fetched all users inventory data:', data);
-        setInventories(data);
+        setInventories(data || []);
       } catch (err) {
         console.error('Error fetching all users inventories:', err);
         setError(err.message);
       }
     };
 
-    fetchInventories();
+    fetchInventory();
   }, []);
 
   return { inventories, error };

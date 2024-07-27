@@ -12,7 +12,7 @@ const inventoryReducer = (state = initialState, action) => {
       }, {});
       return {
         ...state,
-        inventory,
+        inventory: Array.isArray(action.payload) ? action.payload : [],
         error: null,
       };
 
@@ -25,9 +25,13 @@ const inventoryReducer = (state = initialState, action) => {
     case "SET_INVENTORY":
       return {
         ...state,
-        inventory: Array.isArray(action.payload) ? action.payload : [],
-        error: null,
-      };
+        inventory: Array.isArray(action.payload) ? action.payload .reduce((acc, item) => {
+          acc[item.id] = item; 
+          return acc;
+        }, {})
+      : {},
+    error: null,
+  };
 
     case "SET_INVENTORY_ERROR":
       return {

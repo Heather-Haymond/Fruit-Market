@@ -1,19 +1,26 @@
 import React from "react";
-import useFetchInventory from "../../hooks/useFetchInventory";
+import useUserInventory from "../../hooks/useUserInventory";
 import { groupByFruitId } from "../../utils/aggregateData";
 import AverageTotalItem from "./AverageTotalItem";
 
 const AverageTotal = () => {
-  const { inventory, error } = useFetchInventory();
-  // console.log('Inventory:', inventory);
+  const { inventory, error } =  useUserInventory();
+  console.log('Inventory:', inventory);
 
   if (error) return <div>Error: {error}</div>;
+
+  if (!Array.isArray(inventory)) {
+    console.error('Expected inventory to be an array:', inventory);
+    return <div>Error: Inventory data is not in the expected format</div>;
+  }
 
   const groupedInventory = groupByFruitId(inventory);
 
   return (
     <div>
       <h2>Average Total Summary</h2>
+      {groupedInventory.length > 0 ? (
+        <>
       {groupedInventory.map((fruitGroup) => (
         <AverageTotalItem key={fruitGroup.id} fruitGroup={fruitGroup} />
       ))}
@@ -46,6 +53,10 @@ const AverageTotal = () => {
           })()}
         </p>
       </div>
+      </>
+      ) : (
+        <p>No inventory data available.</p>
+      )}
     </div>
   );
 };

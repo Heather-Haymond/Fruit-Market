@@ -1,9 +1,14 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
-function* fetchInventory() {
+function* fetchInventory(action) {
   try {
-    const response = yield axios.get('/api/inventory', action.payload);
+    const endpoint = action.payload ? `/api/inventory/user/${action.payload}` : '/api/inventory';
+    const response = yield call(axios.get, endpoint,{
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}` // Ensure token is used
+      }
+    });
     yield put({ type: 'SET_INVENTORY', payload: response.data });
   } catch (error) {
     console.error('Inventory fetch error:', error);

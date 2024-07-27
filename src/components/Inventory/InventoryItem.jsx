@@ -1,7 +1,7 @@
 import React from "react";
 import SellButton from "../SellButton/SellButton";
 
-const InventoryItem = ({ fruit, user }) => {
+const InventoryItem = React.memo(({ fruit, user }) => {
   console.log("User ID:", user.id);
   console.log("Received fruit data:", fruit);
   console.log("Received user data:", user);
@@ -29,6 +29,6 @@ const InventoryItem = ({ fruit, user }) => {
       </ul>
     </div>
   );
-};
+});
 
 export default InventoryItem;

@@ -1,7 +1,7 @@
 export const groupByFruitId = (inventory) => {
   if (!Array.isArray(inventory)) {
     console.error('Expected inventory to be an array:', inventory);
-    return {}; // return an empty object if the input is not valid
+  return {};
   }
 
   const grouped = {};
