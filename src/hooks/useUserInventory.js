@@ -1,43 +1,42 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const useUserInventory = () => {
- const [inventory, setInventory] = useState([]);
- const [error, setError] = useState(null);
-  const userId = useSelector(state => state.user.id);
-  console.log('User ID:', userId); 
+  const [inventory, setInventory] = useState([]);
+  const [error, setError] = useState(null);
+  const userId = useSelector((state) => state.user.id);
+  console.log("User ID:", userId);
 
   useEffect(() => {
-    if (!userId) {
-        console.error('User ID is not available');
-        return;
-      }
-    
-    const fetchInventory = async () => {
+    const fetchInventory = async (userId) => {
       try {
         const response = await fetch(`/api/inventory/${userId}`);
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log('API response data:', data);
+        console.log("API response data:", data);
 
         // Check if data is an object or array and handle accordingly
         if (Array.isArray(data)) {
           setInventory(data);
-        } else if (typeof data === 'object' && data !== null) {
+        } else if (typeof data === "object" && data !== null) {
           const userInventory = data[userId] || [];
           setInventory(Array.isArray(userInventory) ? userInventory : []);
         } else {
-          throw new Error('Unexpected data format');
+          throw new Error("Unexpected data format");
         }
       } catch (err) {
-        console.error('Error fetching inventory:', err);
+        console.error("Error fetching inventory:", err);
         setError(err.message);
       }
     };
 
-    fetchInventory();
+    if (userId) {
+      fetchInventory(userId);
+    } else {
+      console.log("User ID is not available");
+    }
   }, [userId]);
 
   return { inventory, error };

@@ -55,7 +55,7 @@ router.put("/fruits/prices", async (req, res) => {
   CASE 
   WHEN current_price <= 0.50 THEN 0.50
   WHEN current_price >= 9.99 THEN 9.99
-  ELSE ROUND(CAST(current_price + ((random() * 0.49) + 0.01) * (CASE WHEN random() < 0.5 THEN -1 ELSE 1 END), 2)
+  ELSE ROUND(current_price + ((random() * 0.49) + 0.01) * (CASE WHEN random() < 0.5 THEN -1 ELSE 1 END), 2)
   END 
   RETURNING id, name, current_price; 
   `;
@@ -75,7 +75,7 @@ router.put("/fruits/prices", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM fruits");
+      "SELECT * FROM fruits WHERE current_price IS NOT NULL AND current_price > 0");
     res.status(200).json(result.rows);
   }catch (error) {
       console.error("Error fetching fruits", error);

@@ -13,6 +13,7 @@ import axios from 'axios';
         quantity
       });
         console.log('Sell fruit response:', response.data);
+        yield put({ type: 'UPDATE_USER', payload: response.data.user });
         yield put({ type: 'SELL_FRUIT_SUCCESS', payload: response.data });
       } catch (error) {
         console.error('Sell fruit error:', error);
@@ -40,6 +41,7 @@ import axios from 'axios';
              console.log('New total cash:', formatCash(parseFloat(newTotalCash)));
              console.log('Updated inventory:', updatedInventory);
         console.log('Buy fruit response:', response.data);
+        yield put({ type: 'UPDATE_USER', payload: response.data.user });
         yield put({ type: 'BUY_FRUIT_SUCCESS', payload: response.data });
       } catch (error) {
         console.error('Buy fruit error:', error.response?.data || error.message);
@@ -50,6 +52,7 @@ import axios from 'axios';
   function* transactionsSaga() {
     yield takeLatest('BUY_FRUIT', buySaga);
     yield takeLatest('SELL_FRUIT', sellSaga);
+   
   }
   
   export default transactionsSaga;

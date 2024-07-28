@@ -50,6 +50,7 @@ const Market = () => {
 
   const hasFruits =
     fruits && typeof fruits === "object" && Object.keys(fruits).length > 0;
+    
 
   return (
     <div className="container">
@@ -64,8 +65,9 @@ const Market = () => {
       ) : hasFruits ? (
         <ul>
           {Object.entries(fruits).map(
-            ([key, fruit]) =>
-              key !== "error" && (
+            ([key, fruit]) => {
+            if (fruit && fruit.current_price && !isNaN(parseFloat(fruit.current_price))) {
+              return (
                 <li key={key}>
                   <p>
                     {capitalizeFirstLetter(
@@ -75,12 +77,19 @@ const Market = () => {
                     <BuyButton fruit={fruit} />
                   </p>
                 </li>
-              )
-          )}
-        </ul>
-      ) : (
-        <p>No fruits available</p>
-      )}
+                );
+              }
+              return null;
+            })}
+          </ul>
+        ) : (
+          <p>No fruits available</p>
+        )}
+        <AllUsersInventory currentUser={user} />
+        <LogOutButton className="btn" />
+      </div>
+    );
+  };
       {/* <Inventory inventory={inventory}  */}
 
       {/* <ToggleButton
@@ -100,10 +109,6 @@ const Market = () => {
       } */}
 
       {/* <AverageTotal />  */}
-      <AllUsersInventory currentUser={user} />
-      <LogOutButton className="btn" />
-    </div>
-  );
-};
+    
 
 export default Market;

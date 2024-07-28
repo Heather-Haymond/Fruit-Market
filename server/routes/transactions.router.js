@@ -65,6 +65,8 @@ if (isNaN(numericQuantity)) {
     );
 
     await client.query('COMMIT');
+
+    const updatedUser = await client.query('SELECT * FROM "user" WHERE id = $1', [user_id]);
     
     res.status(201).json({
       inventory: inventoryResult.rows[0],
@@ -173,6 +175,8 @@ router.post('/sell', async (req, res) => {
     
         await client.query('COMMIT');
         res.json({ newTotalCash: formatCash(newTotalCash) });
+
+        const updatedUser = await client.query('SELECT * FROM "user" WHERE id = $1', [user_id]);
     
       } catch (error) {
         await client.query('ROLLBACK');
