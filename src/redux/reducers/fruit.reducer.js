@@ -21,6 +21,15 @@ const fruitReducer = (state = initialState, action) => {
         ...state,
         error: action.payload,
       };
+      case "UPDATE_PRICES_SUCCESS":
+      return { ...state,
+         fruits: action.payload, 
+         error: null };
+         case 'UPDATE_PRICES_FAILURE':
+          return {
+            ...state,
+            error: action.payload
+          };
     default:
       return state;
   }

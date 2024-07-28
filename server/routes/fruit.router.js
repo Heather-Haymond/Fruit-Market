@@ -48,16 +48,16 @@ router.get("/inventory", async (req, res) => {
 
 // Update all fruit prices
 
-router.put("/fruits/prices", async (req, res) => {
+router.put("/prices", async (req, res) => {
   const queryText = ` 
   UPDATE fruits 
   SET current_price =
   CASE 
-  WHEN current_price <= 0.50 THEN 0.50
-  WHEN current_price >= 9.99 THEN 9.99
-  ELSE ROUND(current_price + ((random() * 0.49) + 0.01) * (CASE WHEN random() < 0.5 THEN -1 ELSE 1 END), 2)
-  END 
-  RETURNING id, name, current_price; 
+      WHEN current_price + (0.01 + random() * 0.50) * (CASE WHEN random() < 0.5 THEN -1 ELSE 1 END) > 9.99 THEN 9.99 
+      WHEN current_price + (0.01 + random() * 0.50) * (CASE WHEN random() < 0.5 THEN -1 ELSE 1 END) < 0.50 THEN 0.50 
+      ELSE ROUND(CAST(current_price + (0.01 + random() * 0.50) * (CASE WHEN random() < 0.5 THEN -1 ELSE 1 END) AS numeric), 2) 
+    END 
+  RETURNING id, name, current_price;
   `;
 
   
