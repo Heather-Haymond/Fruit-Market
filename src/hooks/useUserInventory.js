@@ -8,7 +8,7 @@ const useUserInventory = () => {
   console.log("User ID:", userId);
 
   useEffect(() => {
-    const fetchInventory = async (userId) => {
+    const fetchInventory = async () => {
       try {
         const response = await fetch(`/api/inventory/${userId}`);
         if (!response.ok) {

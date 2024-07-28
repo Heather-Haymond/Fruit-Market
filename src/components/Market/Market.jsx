@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import LogOutButton from "../LogOutButton/LogOutButton";
-// import Inventory from "../Inventory/Inventory";
 import PriceUpdater from "../PriceUpdater/PriceUpdater";
 import BuyButton from "../BuyButton/BuyButton";
 import AverageTotal from "../AverageTotal/AverageTotal";
 import FruitsList from "../FruitsList/FruitsList";
 import AllUsersInventory from "../Inventory/AllUsersInventory";
-// import UserInventory from "../Inventory/UserInventory";
+import UserInventoryPage from "../Inventory/UserInventoryPage";
 import ToggleButton from "../Inventory/ToggleButton";
 
 
@@ -56,7 +55,7 @@ const Market = () => {
     <div className="container">
       <h2>Welcome, {user.username}!</h2>
       <p>Your ID is: {user.id}</p>
-      {/* <PriceUpdater onPricesUpdate={handlePricesUpdate} />  */}
+      <PriceUpdater onPricesUpdate={handlePricesUpdate} /> 
       {/* <Wallet /> */}
       <h3>Fruit Market</h3>
       {/* <FruitsList />  */}
@@ -85,7 +84,7 @@ const Market = () => {
         ) : (
           <p>No fruits available</p>
         )}
-        <AllUsersInventory currentUser={user} />
+        <UserInventoryPage currentUser={user} />
         <LogOutButton className="btn" />
       </div>
     );

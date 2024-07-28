@@ -21,5 +21,6 @@ export default function* rootSaga() {
     fruitSaga(),
     inventorySaga(),
     transactionsSaga(),
+    priceSaga(),
   ]);
 }

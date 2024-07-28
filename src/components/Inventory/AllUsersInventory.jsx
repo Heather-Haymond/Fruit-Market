@@ -38,6 +38,7 @@ const AllUsersInventory = ({ currentUser }) => {
               Object.values(groupedInventory).map((group) => (
                 <div key={`group-${group.id}`} className="category">
                   <h5>{group.name}</h5>
+                  <p>Average Purchase Price: ${group.averagePurchasePrice}</p>
                   {group.items.map((item, index) => {
                     const key = item.inventory_id 
                       ? `item-${item.inventory_id}` 
@@ -48,15 +49,16 @@ const AllUsersInventory = ({ currentUser }) => {
                     }
                     return (
                       <InventoryItem 
-                      key={key}  
-                        fruit={{ 
-                          id: group.id,
-                          purchase_price: item.purchase_price, 
-                          fruit_name: group.name 
-                        }}
-                        user={{ id: user.id }} 
-                        currentUser={currentUser}
-                      />
+                      key={`item-${item.inventory_id}`}  
+                      fruit={{ 
+                        id: group.id,
+                        purchase_price: item.purchase_price,
+                        inventory_id: item.inventory_id 
+                      }}
+                      user={{ id: user.id }} 
+                      currentUser={currentUser}
+                    />
+                    
                     );
                   })}
                 </div>

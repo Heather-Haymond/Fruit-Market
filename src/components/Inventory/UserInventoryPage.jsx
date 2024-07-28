@@ -1,35 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import useUserInventory from "../../hooks/useUserInventory";
+import { groupByFruitId } from "../../utils/aggregateData"; 
+import InventoryItem from './InventoryItem';
 import { useSelector } from "react-redux";
-import useUserInventory from "../hooks/useUserInventory";
-import Inventory from "../Inventory/Inventory";
 
 const UserInventory = () => {
-  const inventory = useUserInventory();
-  const userId = useSelector(state => state.user.id);
+    const { inventory, error } = useUserInventory();
+    const currentUser = useSelector((state) => state.user);
 
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const response = await fetch(`/api/inventory/${userId}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('API response data:', data);
+    if (error) return <div>Error: {error}</div>;
+    if (!inventory || inventory.length === 0) return <div>Loading...</div>;
+  
+    const groupedInventory = groupByFruitId(inventory);
+    
 
-        // Extract inventory for the current user
-        const userInventory = data[userId] || [];
-        setInventory(Array.isArray(userInventory) ? userInventory : []);
-      } catch (err) {
-        console.error('Error fetching inventory:', err);
-        setError(err.message);
-      }
-    };
-
-    fetchInventory();
-  }, [userId]);
-
-  return { inventory, error };
+  return (
+    <div>
+      <h3>Your Inventory</h3>
+      {groupedInventory.map((group) => (
+        <div key={group.id}>
+          <h4>{group.name}</h4>
+          <ul>
+            {group.items.map((item) => (
+              <InventoryItem
+                key={item.inventory_id}
+                fruit={{ id: group.id, purchase_price: item.purchase_price, inventory_id: item.inventory_id }}
+                user={{ id: currentUser.id }}
+                currentUser={currentUser}
+              />
+            ))}
+          </ul>
+          <p>Average Purchase Price: ${group.averagePurchasePrice}</p>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default UserInventory;

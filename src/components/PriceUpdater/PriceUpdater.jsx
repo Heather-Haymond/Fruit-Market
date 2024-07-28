@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import axios from "axios";
 
 const PriceUpdater = () => {
-  const [prices, setPrices] = useState([]);
+  const dispatch = useDispatch();
+  const prices = useSelector((state) => state.prices.prices);
   const [error, setError] = useState(null);
 
   useEffect(() => {
