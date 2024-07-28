@@ -8,6 +8,8 @@ import FruitsList from "../FruitsList/FruitsList";
 import AllUsersInventory from "../Inventory/AllUsersInventory";
 import UserInventoryPage from "../Inventory/UserInventoryPage";
 import ToggleButton from "../Inventory/ToggleButton";
+import { Container, Grid, Card, CardContent, CardActions, Typography, Button} from '@mui/material';
+import FruitCard from "../FruitCard/FruitCard"; 
 
 
 const capitalizeFirstLetter = (string) => {
@@ -52,41 +54,53 @@ const Market = () => {
     
 
   return (
-    <div className="container">
-      <h2>Welcome, {user.username}!</h2>
+    <Container>
+       <Typography variant="h2" gutterBottom>
+      Welcome, {user.username}!
+      </Typography>
+
       <p>Your ID is: {user.id}</p>
       <PriceUpdater onPricesUpdate={handlePricesUpdate} /> 
       {/* <Wallet /> */}
-      <h3>Fruit Market</h3>
+      <Typography variant="h3" gutterBottom>
+      Fruit Market
+      </Typography>
+
       {/* <FruitsList />  */}
+      
       {error ? (
-        <p>Error: {error}</p>
+         <Typography color="error">Error: {error}</Typography>
       ) : hasFruits ? (
-        <ul>
-          {Object.entries(fruits).map(
-            ([key, fruit]) => {
+        <Grid container spacing={4}>
+          {Object.entries(fruits).map(([key, fruit]) => {
             if (fruit && fruit.current_price && !isNaN(parseFloat(fruit.current_price))) {
               return (
-                <li key={key}>
-                  <p>
-                    {capitalizeFirstLetter(
-                      replaceUnderscoreWithSpace(fruit.name || "")
-                    )}
-                    : ${parseFloat(fruit.current_price)?.toFixed(2)}
-                    <BuyButton fruit={fruit} />
-                  </p>
-                </li>
+                <Grid item key={key} xs={12} sm={6} md={4}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h5" component="div">
+                        {capitalizeFirstLetter(replaceUnderscoreWithSpace(fruit.name || ""))}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Price: ${parseFloat(fruit.current_price).toFixed(2)}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <BuyButton fruit={fruit} />
+                    </CardActions>
+                  </Card>
+                </Grid>
                 );
               }
               return null;
             })}
-          </ul>
+         </Grid>
         ) : (
-          <p>No fruits available</p>
+          <Typography>No fruits available</Typography>
         )}
         <UserInventoryPage currentUser={user} />
         <LogOutButton className="btn" />
-      </div>
+        </Container>
     );
   };
       {/* <Inventory inventory={inventory}  */}
