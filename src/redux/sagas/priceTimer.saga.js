@@ -1,5 +1,4 @@
 import { call, put, delay, takeLatest } from "redux-saga/effects";
-
 import api from "../../services/api";
 
 function* watchPriceUpdates() {

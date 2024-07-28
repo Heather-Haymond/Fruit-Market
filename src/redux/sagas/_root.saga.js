@@ -5,7 +5,8 @@ import userSaga from './user.saga';
 import fruitSaga from './fruit.saga'; 
 import inventorySaga from './inventory.saga';
 import transactionsSaga from './transactions.saga';
-
+import priceTimerSaga from './priceTimer.saga'
+import priceLogicSaga  from './priceLogic.saga';
 // rootSaga is the primary saga.
 // It bundles up all of the other sagas so our project can use them.
 // This is imported in index.js as rootSaga
@@ -21,6 +22,7 @@ export default function* rootSaga() {
     fruitSaga(),
     inventorySaga(),
     transactionsSaga(),
-    priceSaga(),
+    priceTimerSaga(), 
+    priceLogicSaga(), 
   ]);
 }
