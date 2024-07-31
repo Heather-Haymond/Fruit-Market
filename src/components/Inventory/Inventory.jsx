@@ -1,12 +1,12 @@
-import React, { useMemo }from 'react';
-import InventoryItem from './InventoryItem';
-import useFetchInventory from '../../hooks/useFetchInventory';
+import React, { useMemo } from "react";
+import InventoryItem from "./InventoryItem";
+import useFetchInventory from "../../hooks/useFetchInventory";
 import { groupByFruitId } from "../../utils/aggregateData";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
 const Inventory = () => {
   const user = useSelector((state) => state.user);
-  const { inventory = [], error } = useFetchInventory(); 
+  const { inventory = [], error } = useFetchInventory();
 
   // console.log('User in Inventory:', user);
   // console.log("inventory is an", typeof inventory);
@@ -30,28 +30,27 @@ const Inventory = () => {
             <h4>{group.name}</h4>
             {group.items.map((fruit, index) => (
               <InventoryItem
-                key={fruit.id || index} // Use a unique key for each InventoryItem
+                key={fruit.id || index} 
                 fruit={{
                   id: group.id,
                   name: group.name,
                   purchase_price: fruit.purchase_price,
-          
+                  inventory_id: fruit.inventory_id,
+                  quantity: fruit.quantity
                 }}
                 user={user}
               />
             ))}
-      </div>
-      ))
+          </div>
+        ))
       ) : (
         <p>No items in inventory</p>
       )}
-      </div>
+    </div>
   );
 };
 
 export default Inventory;
-
-
 
 // const getFruitQuantities = (inventory) => {
 //   if (!Array.isArray(inventory)) {
@@ -73,5 +72,6 @@ export default Inventory;
 
 // (Quantity: {fruitQuantities[fruit.id] || 0})
 
-
-{/* Total Quantity: {fruit.totalQuantity || 'N/A'}, -- taked out of aggregatedData */}
+{
+  /* Total Quantity: {fruit.totalQuantity || 'N/A'}, -- taked out of aggregatedData */
+}

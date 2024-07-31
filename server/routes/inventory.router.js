@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../modules/pool");
+// const { getInventoryId } = require('../../src/utils/inventoryID');
 
 
 // Function to group inventory by user
@@ -29,6 +30,25 @@ const groupByUser = (rows) => {
   return Object.values(grouped);
 };
 
+// Function to get inventory ID based on userId and fruitId
+const getInventoryId = async (userId, fruitId) => {
+  try {
+    const result = await pool.query(`
+      SELECT id AS inventory_id
+      FROM inventory
+      WHERE user_id = $1 AND fruit_id = $2
+    `, [userId, fruitId]);
+
+    if (result.rows.length > 0) {
+      return result.rows[0].inventory_id;
+    } else {
+      throw new Error('Inventory not found');
+    }
+  } catch (error) {
+    console.error('Error fetching inventory ID:', error);
+    throw error;
+  }
+};
 
 
 // GET all users and their inventory
@@ -67,6 +87,7 @@ router.get('/:userId', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT 
+          i.id AS inventory_id, 
           f.id AS fruit_id, 
           f.name AS fruit_name, 
           i.quantity, 
@@ -114,6 +135,17 @@ router.get('/item/:inventoryId', async (req, res) => {
   }
 });
 
+// Fetch inventory ID for a specific user and fruit
+router.get('/inventoryId/:userId/:fruitId', async (req, res) => {
+  const { userId, fruitId } = req.params;
+  try {
+    const inventoryId = await getInventoryId(userId, fruitId);
+    res.json({ inventory_id: inventoryId });
+  } catch (error) {
+    console.error("Error fetching inventory ID:", error);
+    res.status(500).json({ error: "Failed to fetch inventory ID" });
+  }
+});
 
 module.exports = router;
 

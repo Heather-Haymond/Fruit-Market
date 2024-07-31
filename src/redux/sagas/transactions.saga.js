@@ -4,13 +4,23 @@ import axios from 'axios';
   
   function* sellSaga(action) {
       try {
-        const { fruit_id, user_id } = action.payload;
-        const quantity = 1; 
-        console.log('Sell fruit payload:', { fruit_id, user_id, quantity });
+        const { fruit_id, user_id, quantity, inventory_id, purchase_price, } = action.payload;
+        // Fetch inventory ID first
+      const inventoryResponse = yield call(axios.get, `/api/inventory/inventoryId/${user_id}/${fruit_id}`);
+      const fetchedInventoryId = inventoryResponse.data.inventory_id;
+      // const { inventory_id } = inventoryResponse.data;
+  
+      if (!inventory_id) {
+        throw new Error('Inventory ID not found');
+      }
+
+        console.log('Sell fruit payload:', { fruit_id, user_id, quantity, inventory_id });
         const response = yield call(axios.post,  '/api/transactions/sell',{
         user_id,
         fruit_id,
-        quantity
+        quantity,
+        purchase_price,
+        inventory_id: fetchedInventoryId 
       });
         console.log('Sell fruit response:', response.data);
         yield put({ type: 'UPDATE_USER', payload: response.data.user });
@@ -20,6 +30,8 @@ import axios from 'axios';
         yield put({ type: 'SELL_FRUIT_FAILURE', payload: error.message });
       }
   }
+  
+      
   
   function* buySaga(action) {
       try {
