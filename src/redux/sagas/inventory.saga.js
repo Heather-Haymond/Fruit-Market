@@ -16,9 +16,30 @@ function* fetchInventory(action) {
   }
 }
 
+function* fetchUserInventory(action) {
+  try {
+      const { userId } = action.payload;
+      const response = yield call(axios.get, `/api/inventory/${userId}`);
+      yield put({ type: FETCH_USER_INVENTORY_SUCCESS, payload: response.data });
+  } catch (error) {
+      yield put({ type: FETCH_USER_INVENTORY_FAILURE, payload: error.message });
+  }
+}
+
+function* fetchInventoryItem(action) {
+  try {
+      const { inventoryId } = action.payload;
+      const response = yield call(axios.get, `/api/inventory/item/${inventoryId}`);
+      yield put({ type: FETCH_INVENTORY_ITEM_SUCCESS, payload: response.data });
+  } catch (error) {
+      yield put({ type: FETCH_INVENTORY_ITEM_FAILURE, payload: error.message });
+  }
+}
 
 function* inventorySaga() {
   yield takeLatest('FETCH_INVENTORY', fetchInventory);
+  yield takeLatest('FETCH_USER_INVENTORY_REQUEST', fetchUserInventory);
+  yield takeLatest('FETCH_INVENTORY_ITEM_REQUEST', fetchInventoryItem);
 }
 
 export default inventorySaga;

@@ -33,10 +33,11 @@ const useUserInventory = () => {
     };
 
     if (userId) {
-      fetchInventory(userId);
+      fetchInventory();
     } else {
       console.log("User ID is not available");
     }
+ 
   }, [userId]);
 
   return { inventory, error };

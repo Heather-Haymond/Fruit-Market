@@ -11,13 +11,7 @@ const initialState = {
           ...state,
           inventory: {
             ...state.inventory,
-            [action.payload.id]: {
-              ...state.inventory[action.payload.id],
-              quantity:
-                (state.inventory[action.payload.id]?.quantity || 0) +
-                action.payload.quantity,
-              purchase_price: action.payload.purchase_price,
-            },
+            ...inventory
           },
           totalCash: newTotalCash,
           error: null,

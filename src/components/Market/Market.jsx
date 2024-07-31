@@ -8,8 +8,9 @@ import FruitsList from "../FruitsList/FruitsList";
 import AllUsersInventory from "../Inventory/AllUsersInventory";
 import UserInventoryPage from "../Inventory/UserInventoryPage";
 import ToggleButton from "../Inventory/ToggleButton";
-import { Container, Grid, Card, CardContent, CardActions, Typography, Button} from '@mui/material';
+import { Container, Grid, Card, CardContent, CardActions, Typography, Button, TextField} from '@mui/material';
 import FruitCard from "../FruitCard/FruitCard"; 
+// import UserChart from '../Charts/UserChart';
 
 
 const capitalizeFirstLetter = (string) => {
@@ -29,6 +30,8 @@ const Market = () => {
   // const userInventory = useSelector((state) => state.userInventory);
   const allUsersInventories = useSelector((state) => state.allUsersInventories);
   // const [showAllUsersInventory, setShowAllUsersInventory] = useState(false);
+
+  const [quantities, setQuantities] = useState({});
 
   const handlePricesUpdate = (updatedPrices) => {
     dispatch({
@@ -52,7 +55,12 @@ const Market = () => {
   const hasFruits =
     fruits && typeof fruits === "object" && Object.keys(fruits).length > 0;
     
-
+    const handleQuantityChange = (fruitId, value) => {
+      setQuantities(prevQuantities => ({
+        ...prevQuantities,
+        [fruitId]: value
+      }));
+    };
   return (
     <Container>
        <Typography variant="h2" gutterBottom>
@@ -81,12 +89,29 @@ const Market = () => {
                       <Typography variant="h5" component="div">
                         {capitalizeFirstLetter(replaceUnderscoreWithSpace(fruit.name || ""))}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" className="black-text">
                         Price: ${parseFloat(fruit.current_price).toFixed(2)}
                       </Typography>
+                      <TextField
+                        size="small"
+                        label="Quantity"
+                        type="number"
+                        min="1"
+                        value={quantities[key] || 1}
+                        onChange={(e) => handleQuantityChange(key, e.target.value)}
+                        variant="outlined"
+                        sx={{ width: '80px', marginTop: '10px' }}
+                        className="small-text-field"
+                        InputLabelProps={{
+                          style: { color: "black" },
+                        }}
+                        InputProps={{
+                          style: { color: "black" },
+                        }}
+                      />
                     </CardContent>
                     <CardActions>
-                      <BuyButton fruit={fruit} />
+                      <BuyButton fruit={fruit} quantity={quantities[key] || 1} />
                     </CardActions>
                   </Card>
                 </Grid>
@@ -99,6 +124,7 @@ const Market = () => {
           <Typography>No fruits available</Typography>
         )}
         <UserInventoryPage currentUser={user} />
+        {/* <UserChart/> */}
         <LogOutButton className="btn" />
         </Container>
     );

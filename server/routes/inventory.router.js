@@ -2,42 +2,6 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../modules/pool");
 
-// // GET all inventory (not grouped)
-// router.get('/', async (req, res) => {
-//   try {
-//     const result = await pool.query(`
-//       SELECT
-//         i.id AS inventory_id,
-//         u.id AS user_id,
-//         u.username,
-//         f.id AS fruit_id,
-//         f.name AS fruit_name,
-//         i.quantity,
-//         i.purchase_price
-//       FROM
-//         inventory i
-//       JOIN
-//         "user" u ON i.user_id = u.id
-//       JOIN
-//         fruits f ON i.fruit_id = f.id;
-//     `);
-
-//     const formattedRows = result.rows.map(row => ({
-//       inventory_id: row.inventory_id,
-//       user_id: row.user_id,
-//       username: row.username,
-//       fruit_id: row.fruit_id,
-//       fruit_name: row.fruit_name,
-//       quantity: row.quantity,
-//       purchase_price: parseFloat(row.purchase_price)
-//     }));
-//     console.log('Formatted Rows:', formattedRows);
-//     res.json(formattedRows);
-//   } catch (error) {
-//     console.error('Error fetching inventory:', error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
 
 // Function to group inventory by user
 const groupByUser = (rows) => {
@@ -67,8 +31,7 @@ const groupByUser = (rows) => {
 
 
 
-// GET all users inventory
-
+// GET all users and their inventory
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(` 
@@ -120,6 +83,37 @@ router.get('/:userId', async (req, res) => {
     res.status(500).json({ error: "Failed to fetch user inventory" });
   }
 });
+
+// Fetch inventory item by ID
+router.get('/item/:inventoryId', async (req, res) => {
+  const inventoryId = req.params.inventoryId;
+  try {
+    const result = await pool.query(`
+      SELECT 
+        i.id AS inventory_id,
+        u.id AS user_id,
+        u.username,
+        f.id AS fruit_id,
+        f.name AS fruit_name,
+        i.quantity,
+        i.purchase_price
+      FROM inventory i
+      JOIN "user" u ON i.user_id = u.id
+      JOIN fruits f ON i.fruit_id = f.id
+      WHERE i.id = $1
+    `, [inventoryId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Inventory item not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching inventory item by ID:", error);
+    res.status(500).json({ error: "Failed to fetch inventory item" });
+  }
+});
+
 
 module.exports = router;
 
