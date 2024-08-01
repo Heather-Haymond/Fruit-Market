@@ -51,7 +51,7 @@ const getInventoryId = async (userId, fruitId) => {
 };
 
 
-// GET all users and their inventory
+// GET all inventory by ID
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(` 

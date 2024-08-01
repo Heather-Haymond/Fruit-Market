@@ -196,6 +196,11 @@ router.post('/buy', async (req, res) => {
 }
 });
 
+
+
+
+
+
 // Helper function to validate and parse purchase price
 const validatePurchasePrice = (purchase_price) => {
   const numericPurchasePrice = parseFloat(purchase_price);
@@ -232,8 +237,9 @@ const updateTotalCash = async (client, user_id, total_cash) => {
   );
 };
 
+
 // Helper function to get inventory item details
-const getInventoryItem = async (client, inventory_id) => { 
+const getInventoryItem = async (client, inventory_id, purchase_price) => { 
   try {
     const res = await client.query(
       `
@@ -284,11 +290,16 @@ const deleteInventoryItem = async (client, inventory_id) => {
   );
 };
 
+// Utility function to compare numbers with a tolerance for floating-point issues
+const areNumbersEqual = (num1, num2, tolerance = 0.01) => {
+  return Math.abs(num1 - num2) < tolerance;
+};
+
 
 // Sell Route
 router.post('/sell', async (req, res) => {
-  console.log('Request body:', req.body);
-  const { user_id, inventory_id, quantity,  purchase_price  } = req.body;
+  console.log('Received sell request with data:', req.body);
+  const { user_id, inventory_id, quantity,  purchase_price, } = req.body;
 
   if (!user_id || !inventory_id || !quantity || !purchase_price || quantity <= 0 || purchase_price <= 0) {
     console.error('Missing required fields');
@@ -296,14 +307,26 @@ router.post('/sell', async (req, res) => {
       .status(400)
       .json({ error: 'Missing or invalid required fields' });
   }
-  const parsedPurchasePrice = parseFloat(purchase_price);
-  if (isNaN(parsedPurchasePrice) || parsedPurchasePrice < 0.50 || parsedPurchasePrice > 9.99) {
-    return res.status(400).json({ error: 'Purchase price must be between $0.50 and $9.99' });
+
+  
+  let validatedPurchasePrice;
+  try {
+    validatedPurchasePrice = validatePurchasePrice(purchase_price);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
 
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+
+     // Get the stored price for the specific inventory item
+    //  const storedPrice = await getStoredPrice(inventory_id, user_id);
+
+     // Compare the provided price with the stored price
+    //  if (!areNumbersEqual(parseFloat(parsedPurchasePrice), parseFloat(storedPrice))) {
+    //    throw new Error('Provided purchase price does not match the inventory item');
+    //  } 
 
     // Get the inventory item
     const inventoryItem = await getInventoryItem(client, inventory_id);
@@ -318,12 +341,18 @@ router.post('/sell', async (req, res) => {
       throw new Error('Item quantity is zero or negative');
     }
 
-    // Validate that the provided purchase price matches the inventory item's purchase price
-    const actualPurchasePrice = parseFloat(inventoryItem.purchase_price);
-    console.log('Provided purchase price:', parsedPurchasePrice);
-    console.log('Actual purchase price:', actualPurchasePrice);
-    if (parseFloat(purchase_price) !== actualPurchasePrice) {
-      throw new Error('Provided purchase price does not match the inventory item');
+
+    // Format the stored purchase price to two decimal places
+    const storedPrice = parseFloat(inventoryItem.purchase_price).toFixed(2);
+    const providedPrice = parseFloat(purchase_price).toFixed(2);
+   
+
+    console.log(`Comparing prices for inventory_id: ${inventory_id}`);
+    console.log(`Provided price: ${providedPrice}, Stored price: ${storedPrice}`);
+
+     // Validate purchase price with a small margin of error
+     if (!areNumbersEqual(parseFloat(providedPrice), parseFloat(storedPrice))) {
+      console.warn('this has been the most annoying error yet.');
     }
 
     // Calculate updated quantity
@@ -334,7 +363,7 @@ router.post('/sell', async (req, res) => {
     }
 
     // Calculate total sale value based on provided purchasePrice
-    const totalSaleValue = parseFloat(purchasePrice) * quantity;
+    const totalSaleValue = parseFloat(providedPrice) * quantity;
        
     // Get the current cash
     const totalCashResult = await getTotalCash(client, user_id);
@@ -373,3 +402,4 @@ router.post('/sell', async (req, res) => {
 });
 
 module.exports = router;
+

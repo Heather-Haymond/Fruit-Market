@@ -5,7 +5,7 @@ export const groupByFruitId = (inventory) => {
 
   const grouped = {};
   inventory.forEach((fruitItem) => {
-    const { inventory_id, fruit_id, fruit_name, purchase_price } = fruitItem;
+    const { inventory_id, fruit_id, fruit_name, purchase_price, quantity } = fruitItem;
     // console.log("Processing fruitItem:", fruitItem);
     // console.log("Type of fruit_id:", typeof fruit_id);
     // console.log("Value of fruit_id:", fruit_id);
@@ -23,20 +23,25 @@ export const groupByFruitId = (inventory) => {
         items: [],
         totalQuantity: 0,
         totalPurchasePrice: 0,
+        lastPurchasePrice: 0,
       };
     }
     const numericPrice = Number(purchase_price);
+    const numericQuantity = Number(quantity);
     if (!isNaN(numericPrice)) {
       grouped[fruit_id].items.push({
         purchase_price: numericPrice,
         inventory_id,
+        quantity: numericQuantity,
       });
       grouped[fruit_id].totalQuantity += 1; 
       grouped[fruit_id].totalPurchasePrice += numericPrice;
+      grouped[fruit_id].lastPurchasePrice = numericPrice;
     } else {
       console.error("Invalid purchase_price:", purchase_price);
     }
   });
+
 
   
   // Calculate the average purchase price for each fruit group

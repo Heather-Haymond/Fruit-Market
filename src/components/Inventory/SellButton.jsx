@@ -2,17 +2,19 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 
-const SellButton = ({fruit_id, user_id, inventory_id, quantity,  purchase_price, }) => {
+const SellButton = ({fruit_id, user_id, inventory_id, quantity,  purchase_price, last_purchase_price }) => {
   const dispatch = useDispatch();
 
   const handleSell = () => {
-    console.log('Props passed to SellButton:', {
+    console.log('Exact values being sent to server:', {
       fruit_id,
       user_id,
       inventory_id,
       quantity,
-      purchase_price,
+      purchase_price: Number(purchase_price).toFixed(2),
+      last_purchase_price: Number(last_purchase_price).toFixed(2),
     });
+
 
     if (fruit_id > 0 && user_id) {
       dispatch({
@@ -22,7 +24,8 @@ const SellButton = ({fruit_id, user_id, inventory_id, quantity,  purchase_price,
           user_id,
           inventory_id,
           quantity,
-          purchase_price,
+          purchase_price: Number(purchase_price).toFixed(2),
+          last_purchase_price: Number(last_purchase_price).toFixed(2),
         },
       });
     } else {
@@ -31,7 +34,9 @@ const SellButton = ({fruit_id, user_id, inventory_id, quantity,  purchase_price,
         user_id,
         inventory_id,
         quantity,
-        purchase_price,
+        purchase_price: Number(purchase_price),
+        last_purchase_price: Number(last_purchase_price).toFixed(2),
+
       });
     }
   };

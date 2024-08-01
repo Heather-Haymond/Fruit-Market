@@ -39,17 +39,18 @@ const AllUsersInventory = ({ currentUser }) => {
                 <div key={`group-${group.id}`} className="category">
                   <h5>{group.name}</h5>
                   <p>Average Purchase Price: ${group.averagePurchasePrice}</p>
-                  {group.items.map((item, index) => {
+                  {group.items.map((item) => {
+                    // Ensure unique key assignment
                     const key = item.inventory_id 
                       ? `item-${item.inventory_id}` 
-                      : `user-${user.id}-group-${group.id}-index-${index}`;
-                    
+                      : `user-${user.id}-group-${group.id}-index-${Math.random()}`;
+
                     if (!item.inventory_id) {
                       console.log('Inventory item with undefined inventory_id:', item);
                     }
                     return (
                       <InventoryItem 
-                      key={`item-${item.inventory_id}`}  
+                      key={key} 
                       fruit={{ 
                         id: group.id,
                         purchase_price: item.purchase_price,

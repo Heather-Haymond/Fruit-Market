@@ -34,7 +34,8 @@ const Inventory = () => {
                 fruit={{
                   id: group.id,
                   name: group.name,
-                  purchase_price: fruit.purchase_price,
+                  purchase_price: Number(fruit.purchase_price).toFixed(2),
+                  last_purchase_price: group.lastPurchasePrice,
                   inventory_id: fruit.inventory_id,
                   quantity: fruit.quantity
                 }}
