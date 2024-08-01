@@ -1,14 +1,17 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useState } from 'react';
+import { Bar, Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import useUserInventory from '../../hooks/useUserInventory';
 import { groupByFruitId } from '../../utils/aggregateData';
 import { useSelector } from 'react-redux';
+import RadioButton from '../Charts/RadioButton';
+
 
 
 const InventoryChart = () => {
   const { inventory, error } = useUserInventory();
   const currentUser = useSelector((state) => state.user);
+  const [chartType, setChartType] = useState('bar');
 
   if (error) return <div>Error: {error}</div>;
   if (!inventory || inventory.length === 0) return <div>Loading...</div>;
@@ -32,16 +35,19 @@ const InventoryChart = () => {
       data: fruit.prices,
       borderColor: `rgba(${index * 50}, ${index * 75}, 192, 1)`,
       backgroundColor: `rgba(${index * 50}, ${index * 75}, 192, 0.2)`,
+      borderWidth: 1,
       fill: false,
     }))
   };
-  
-  return (
-    <div>
+
+
+    return (
+      <div>
       <h3>Inventory Price Trends</h3>
-      <Line data={chartData} />
+      <RadioButton chartType={chartType} onChange={setChartType} />
+      {chartType === 'bar' ? <Bar data={chartData} /> : <Line data={chartData} />}
     </div>
-  );
-};
+    );
+  };
 
 export default InventoryChart;

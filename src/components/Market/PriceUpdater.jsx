@@ -36,7 +36,6 @@ const PriceUpdater = () => {
     
   return (
     <div>
-      <h3>Fruit Prices</h3>
       {error && <p>{error}</p>}
       <ul>
         {fruits.length > 0 ? (
@@ -49,7 +48,7 @@ const PriceUpdater = () => {
             </li>
           ))
         ) : (
-          <li>No prices available</li>
+          <p></p>
         )}
       </ul>
     </div>
