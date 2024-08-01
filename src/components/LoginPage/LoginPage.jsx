@@ -9,11 +9,11 @@ function LoginPage() {
   return (
 <Container
       sx={{
-        height: '100vh', // Full viewport height
-        backgroundImage: `url('/src/images/loginImage.png')`, // Path to your image
-        backgroundSize: 'cover', // Cover the entire container
-        backgroundPosition: 'center', // Center the image
-        backgroundRepeat: 'no-repeat', // Prevent repeating the image
+        height: '100vh', 
+        backgroundImage: `url('/src/images/loginImage.png')`, 
+        backgroundSize: 'cover', 
+        backgroundPosition: 'center', 
+        backgroundRepeat: 'no-repeat', 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
