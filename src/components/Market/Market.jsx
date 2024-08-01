@@ -65,8 +65,8 @@ const Market = () => {
       Welcome, {user.username}!
       </Typography>
 
-      <p>Your ID is: {user.id}</p>
-      <PriceUpdater onPricesUpdate={handlePricesUpdate} /> 
+      {/* <p>Your ID is: {user.id}</p> */}
+      {/* <PriceUpdater onPricesUpdate={handlePricesUpdate} />  */}
       {/* <Wallet /> */}
       <Typography variant="h3" gutterBottom>
       Fruit Market

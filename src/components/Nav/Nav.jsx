@@ -1,46 +1,56 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import LogOutButton from '../LogOutButton/LogOutButton';
 import './Nav.css';
 import { useSelector } from 'react-redux';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Link as MuiLink,
+  Box
+} from '@mui/material';
 
 function Nav() {
   const user = useSelector((store) => store.user);
 
   return (
-    <div className="nav">
-      <Link to="/home">
-        <h2 className="nav-title">Fruit Market</h2>
-      </Link>
-      <div>
-        {/* If no user is logged in, show these links */}
-        {!user.id && (
-          // If there's no user, show login/registration links
-          <Link className="navLink" to="/login">
-            Login / Register
-          </Link>
-        )}
-
-        {/* If a user is logged in, show these links */}
-        {user.id && (
-          <>
-            <Link className="navLink" to="/user">
-              Market
-            </Link>
-
-            <Link className="navLink" to="/info">
-              Inventory
-            </Link>
-
-            <Link className="navLink" to="/about">
-              Wallet
-            </Link>
-
-            <LogOutButton className="navLink" />
-          </>
-        )}
-      </div>
-    </div>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <MuiLink component={RouterLink} to="/home" color="inherit" underline="none">
+            Fruit Market
+            </MuiLink>
+        </Typography>
+        <Box>
+          {/* If no user is logged in, show the login/register button */}
+          {!user.id && (
+            <Button color="inherit" component={RouterLink} to="/login">
+              Login / Register
+            </Button>
+          )}
+          {/* If a user is logged in, show navigation buttons */}
+          {user.id && (
+            <>
+              <Button color="inherit" component={RouterLink} to="/user">
+                Market
+              </Button>
+              <Button color="inherit" component={RouterLink} to="/info">
+                Inventory
+              </Button>
+              <Button color="inherit" component={RouterLink} to="/about">
+                Wallet
+              </Button>
+              <Button color="inherit" component={RouterLink} to="/chart">
+                Graphs
+              </Button>
+              <LogOutButton />
+            </>
+          )}
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }
 

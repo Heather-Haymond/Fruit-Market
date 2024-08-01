@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, TextField, Typography, Box } from "@mui/material";
 
 function RegisterForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
 
@@ -11,7 +12,7 @@ function RegisterForm() {
     event.preventDefault();
 
     dispatch({
-      type: 'REGISTER',
+      type: "REGISTER",
       payload: {
         username: username,
         password: password,
@@ -20,41 +21,119 @@ function RegisterForm() {
   }; // end registerUser
 
   return (
-    <form className="formPanel" onSubmit={registerUser}>
-      <h2>Register User</h2>
+    <Box
+      component="form"
+      onSubmit={registerUser}
+      sx={{ maxWidth: 400, mx: "auto", p: 2 }}
+    >
+      <Box
+        sx={{
+          backgroundColor: "rgba(255, 255, 255, .6)",
+          border: "2px solid black",
+          borderRadius: 1,
+          padding: .5,
+          textAlign: "center", 
+          mb: 2,
+          height: '20px', 
+          maxWidth: '250px',
+          display: 'flex',
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          margin: '0 auto',
+        
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            color: "black",
+            fontSize: '1.25rem',
+          }}
+        >
+          Register User
+        </Typography>
+      </Box>
       {errors.registrationMessage && (
-        <h3 className="alert" role="alert">
+        <Typography variant="h6" color="error" gutterBottom>
           {errors.registrationMessage}
-        </h3>
+        </Typography>
       )}
-      <div>
-        <label htmlFor="username">
-          Username:
-          <input
-            type="text"
-            name="username"
-            value={username}
-            required
-            onChange={(event) => setUsername(event.target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label htmlFor="password">
-          Password:
-          <input
-            type="password"
-            name="password"
-            value={password}
-            required
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <input className="btn" type="submit" name="submit" value="Register" />
-      </div>
-    </form>
+      <Box mb={2}>
+        <TextField
+          fullWidth
+          label="Username"
+          variant="outlined"
+          value={username}
+          required
+          onChange={(event) => setUsername(event.target.value)}
+          InputProps={{
+            sx: {
+              fontWeight: "bold",
+              color: "black",
+              backgroundColor: "white",
+              border: "2px solid black",
+              borderRadius: 1,
+              "& .MuiInputBase-input": {
+                fontWeight: "bold",
+              },
+            },
+          }}
+          InputLabelProps={{
+            sx: {
+              fontWeight: "bold",
+              color: "black",
+            },
+          }}
+        />
+      </Box>
+      <Box mb={2}>
+        <TextField
+          fullWidth
+          label="Password"
+          type="password"
+          variant="outlined"
+          value={password}
+          required
+          onChange={(event) => setPassword(event.target.value)}
+          InputProps={{
+            sx: {
+              fontWeight: "bold",
+              color: "black",
+              backgroundColor: "white",
+              border: "2px solid black",
+
+              "& .MuiInputBase-input": {
+                fontWeight: "bold",
+              },
+            },
+          }}
+          InputLabelProps={{
+            sx: {
+              fontWeight: "bold",
+              color: "black",
+            },
+          }}
+        />
+      </Box>
+      <Button
+        type="submit"
+        variant="contained"
+        sx={{
+          backgroundColor: "#c0ca33",
+          color: "#000",
+          "&:hover": {
+            backgroundColor: "#f4d03f",
+            color: "#000",
+          },
+          mb: 1,
+        }}
+        fullWidth
+      >
+        Register
+      </Button>
+    </Box>
   );
 }
 

@@ -1,11 +1,10 @@
-// src/components/Inventory/InventoryChart.jsx
-
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import useUserInventory from '../../hooks/useUserInventory';
 import { groupByFruitId } from '../../utils/aggregateData';
 import { useSelector } from 'react-redux';
+
 
 const InventoryChart = () => {
   const { inventory, error } = useUserInventory();
@@ -19,7 +18,7 @@ const InventoryChart = () => {
   const fruitsPrices = groupedInventory.map(group => ({
     name: group.name,
     prices: group.items.map(item => ({
-      date: new Date(item.date).toLocaleDateString(),
+      // date: new Date(item.date).toLocaleDateString(),
       price: item.purchase_price
     }))
   }));

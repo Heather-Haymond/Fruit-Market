@@ -7,30 +7,23 @@ const initialState = {
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'SET_USER':
-      console.log('Setting user:', action.payload);
       return {
         ...state,
       ...action.payload,
       total_cash: action.payload.total_cash || state.total_cash
     };
     case 'UNSET_USER':
-      return initialState;
-
-    case 'UPDATE_USER':
-      return {
-        ...state,
-        ...action.payload,
-      };
+      return {};
       case "BUY_FRUIT_SUCCESS":
         return {
           ...state,
-          total_cash: parseFloat((parseFloat(state.total_cash) - parseFloat(action.payload.purchasePrice * action.payload.quantity)).toFixed(2)),
+          total_cash: (parseFloat(state.total_cash) - parseFloat(action.payload.purchasePrice)).toFixed(2),
           error: null,
         };
       case "SELL_FRUIT_SUCCESS":
         return {
           ...state,
-          total_cash: parseFloat((parseFloat(state.total_cash) + parseFloat(action.payload.sellPrice * action.payload.quantity)).toFixed(2)),
+          total_cash: (parseFloat(state.total_cash) + parseFloat(action.payload.sellPrice)).toFixed(2),
           error: null,
         };
     default:

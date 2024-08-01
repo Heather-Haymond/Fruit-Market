@@ -25,9 +25,18 @@ import Wallet from '../Wallet/Wallet';
 import AverageTotal from '../Wallet/AverageTotal';
 import PriceUpdater from '../Market/PriceUpdater';
 import AllUsersInventory from '../Inventory/AllUsersInventory';
+import Chart from '../Charts/Chart';
 
 import './App.css';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4caf50', // Green color
+    },
+  },
+});
 function App() {
   const dispatch = useDispatch();
 
@@ -39,6 +48,7 @@ function App() {
   }, [dispatch]);
 
   return (
+  <ThemeProvider theme={theme}>
     <Router>
       <div>
         <Nav />
@@ -73,6 +83,10 @@ function App() {
         <ProtectedRoute exact path="/all-users-inventory">
             <AllUsersInventory currentUser={user} /> 
           </ProtectedRoute>
+          <ProtectedRoute exact path="/chart">
+            <Chart /> 
+          </ProtectedRoute>
+         
           {/* For protected routes, the view could show one of several things on the same route.
             Visiting localhost:5173/user will show the UserPage if the user is logged in.
             If the user is not logged in, the ProtectedRoute will show the LoginPage (component).
@@ -143,6 +157,7 @@ function App() {
         <Footer />
       </div>
     </Router>
+  </ThemeProvider>
   );
 }
 

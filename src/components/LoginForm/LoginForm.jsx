@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import {useSelector} from 'react-redux';
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { Box, Typography, TextField, Button } from '@mui/material';
 
 function LoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const errors = useSelector(store => store.errors);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
 
   const login = (event) => {
@@ -13,54 +14,116 @@ function LoginForm() {
 
     if (username && password) {
       dispatch({
-        type: 'LOGIN',
+        type: "LOGIN",
         payload: {
           username: username,
           password: password,
         },
       });
     } else {
-      dispatch({ type: 'LOGIN_INPUT_ERROR' });
+      dispatch({ type: "LOGIN_INPUT_ERROR" });
     }
   }; // end login
 
   return (
-    <form className="formPanel" onSubmit={login}>
-      <h2>Login</h2>
+    <Box
+      component="form"
+      onSubmit={login}
+      sx={{ maxWidth: 400, mx: 'auto', p: 2, backgroundColor: 'rgba(255, 255, 255, 0.6)', border: '2px solid black', borderRadius: 1 }}
+    >
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ fontWeight: 'bold', color: 'black', fontSize: '1.25rem', textAlign: 'center' }}
+      >
+        Login
+      </Typography>
       {errors.loginMessage && (
-        <h3 className="alert" role="alert">
+        <Typography
+          variant="h6"
+          color="error"
+          sx={{ textAlign: 'center', mb: 2 }}
+        >
           {errors.loginMessage}
-        </h3>
+        </Typography>
       )}
-      <div>
-        <label htmlFor="username">
-          Username:
-          <input
-            type="text"
-            name="username"
-            required
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label htmlFor="password">
-          Password:
-          <input
-            type="password"
-            name="password"
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <input className="btn" type="submit" name="submit" value="Log In" />
-      </div>
-    </form>
+      <Box mb={2}>
+        <TextField
+          fullWidth
+          label="Username"
+          variant="outlined"
+          value={username}
+          required
+          onChange={(event) => setUsername(event.target.value)}
+          InputProps={{
+            sx: {
+              fontWeight: 'bold',
+              color: 'black',
+              backgroundColor: 'white',
+              border: '2px solid black',
+              borderRadius: 1,
+              '& .MuiInputBase-input': {
+                fontWeight: 'bold',
+              },
+            },
+          }}
+          InputLabelProps={{
+            sx: {
+              fontWeight: 'bold',
+              color: 'black',
+            },
+          }}
+        />
+      </Box>
+      <Box mb={2}>
+        <TextField
+          fullWidth
+          label="Password"
+          type="password"
+          variant="outlined"
+          value={password}
+          required
+          onChange={(event) => setPassword(event.target.value)}
+          InputProps={{
+            sx: {
+              fontWeight: 'bold',
+              color: 'black',
+              backgroundColor: 'white',
+              border: '2px solid black',
+              borderRadius: 1,
+              '& .MuiInputBase-input': {
+                fontWeight: 'bold',
+              },
+            },
+          }}
+          InputLabelProps={{
+            sx: {
+              fontWeight: 'bold',
+              color: 'black',
+            },
+          }}
+        />
+      </Box>
+      <Button
+        type="submit"
+        variant="contained"
+        sx={{
+          backgroundColor: '#c0ca33',
+          color: '#000',
+          '&:hover': {
+            backgroundColor: '#f4d03f',
+            color: '#000',
+          },
+          mb: 2,
+          maxWidth: '150px', 
+        }}
+        fullWidth
+      >
+        Log In
+      </Button>
+    </Box>
   );
 }
+
 
 export default LoginForm;
