@@ -1,20 +1,25 @@
 import React from "react";
-import { useSelector } from 'react-redux';
-import AverageTotal from '../AverageTotal/AverageTotal';
+import { useSelector } from "react-redux";
+import { Box, Typography, Paper } from "@mui/material";
+import AverageTotal from "./AverageTotal";
 
 const Wallet = () => {
   const user = useSelector((state) => state.user);
 
   const totalCash = parseFloat(user.total_cash).toFixed(2)
-  ? parseFloat(user.total_cash).toFixed(2) 
-  : '0.00';
+    ? parseFloat(user.total_cash).toFixed(2)
+    : "0.00";
 
   return (
-    <div>
-      <h3>Wallet</h3>
-      <p>Total Cash: ${ totalCash }</p>
+    <Box sx={{ padding: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Wallet
+      </Typography>
+      <Paper sx={{ padding: 2, marginBottom: 3 }}>
+        <Typography variant="h6">Total Cash: ${totalCash}</Typography>
+      </Paper>
       <AverageTotal />
-    </div>
+    </Box>
   );
 };
 

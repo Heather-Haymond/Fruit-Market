@@ -3,6 +3,7 @@ import InventoryItem from "./InventoryItem";
 import useFetchInventory from "../../hooks/useFetchInventory";
 import { groupByFruitId } from "../../utils/aggregateData";
 import { useSelector } from "react-redux";
+import { Container, Typography, Paper, Grid } from '@mui/material';
 
 const Inventory = () => {
   const user = useSelector((state) => state.user);
@@ -22,34 +23,43 @@ const Inventory = () => {
   }, [inventory]);
 
   return (
-    <div>
-      <h3>Inventory Basket</h3>
+    <Container>
+      <Typography variant="h3" gutterBottom>
+        Inventory Basket
+      </Typography>
       {groupedInventory.length > 0 ? (
-        groupedInventory.map((group) => (
-          <div key={group.id} className="category">
-            <h4>{group.name}</h4>
-            {group.items.map((fruit, index) => (
-              <InventoryItem
-                key={fruit.id || index} 
-                fruit={{
-                  id: group.id,
-                  name: group.name,
-                  purchase_price: Number(fruit.purchase_price).toFixed(2),
-                  last_purchase_price: group.lastPurchasePrice,
-                  inventory_id: fruit.inventory_id,
-                  quantity: fruit.quantity
-                }}
-                user={user}
-              />
-            ))}
-          </div>
-        ))
+        <Grid container spacing={3}>
+          {groupedInventory.map((group) => (
+            <Grid item xs={12} sm={6} md={4} key={group.id}>
+              <Paper elevation={3} sx={{ padding: 2 }}>
+                <Typography variant="h4" gutterBottom>
+                  {group.name}
+                </Typography>
+                {group.items.map((fruit, index) => (
+                  <InventoryItem
+                    key={fruit.id || index} 
+                    fruit={{
+                      id: group.id,
+                      name: group.name,
+                      purchase_price: Number(fruit.purchase_price).toFixed(2),
+                      last_purchase_price: group.lastPurchasePrice,
+                      inventory_id: fruit.inventory_id,
+                      quantity: fruit.quantity
+                    }}
+                    user={user}
+                  />
+                ))}
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
       ) : (
-        <p>No items in inventory</p>
+        <Typography variant="body1">No items in inventory</Typography>
       )}
-    </div>
+    </Container>
   );
 };
+
 
 export default Inventory;
 
