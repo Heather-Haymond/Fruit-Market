@@ -22,8 +22,8 @@ import RegisterPage from '../RegisterPage/RegisterPage';
 import Inventory from '../Inventory/Inventory';
 import Market from '../Market/Market';
 import Wallet from '../Wallet/Wallet'; 
-import AverageTotal from '../AverageTotal/AverageTotal';
-import PriceUpdater from '../PriceUpdater/PriceUpdater';
+import AverageTotal from '../Wallet/AverageTotal';
+import PriceUpdater from '../Market/PriceUpdater';
 import AllUsersInventory from '../Inventory/AllUsersInventory';
 
 import './App.css';

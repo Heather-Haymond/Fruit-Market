@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import LogOutButton from "../LogOutButton/LogOutButton";
-import PriceUpdater from "../PriceUpdater/PriceUpdater";
+import PriceUpdater from "./PriceUpdater";
 import BuyButton from "../BuyButton/BuyButton";
-import AverageTotal from "../AverageTotal/AverageTotal";
 import FruitsList from "../FruitsList/FruitsList";
-import AllUsersInventory from "../Inventory/AllUsersInventory";
 import UserInventoryPage from "../Inventory/UserInventoryPage";
 import ToggleButton from "../Inventory/ToggleButton";
 import { Container, Grid, Card, CardContent, CardActions, Typography, Button, TextField} from '@mui/material';
@@ -92,7 +90,7 @@ const Market = () => {
                       <Typography variant="body2" className="black-text">
                         Price: ${parseFloat(fruit.current_price).toFixed(2)}
                       </Typography>
-                      <TextField
+                      {/* <TextField
                         size="small"
                         label="Quantity"
                         type="number"
@@ -108,7 +106,7 @@ const Market = () => {
                         InputProps={{
                           style: { color: "black" },
                         }}
-                      />
+                      /> */}
                     </CardContent>
                     <CardActions>
                       <BuyButton fruit={fruit} quantity={quantities[key] || 1} />

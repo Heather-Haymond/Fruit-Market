@@ -2,97 +2,6 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../modules/pool");
 
-// // Helper function to validate and parse purchase price
-// const validatePurchasePrice = (purchase_price) => {
-//   const numericPurchasePrice = parseFloat(purchase_price);
-//   if (isNaN(numericPurchasePrice) || numericPurchasePrice <= 0.50) {
-//     throw new Error('Invalid purchase price');
-//   }
-//   return numericPurchasePrice.toFixed(2);
-// };
-
-// // Helper function to format cash
-// const formatCash = (cash) => `$${parseFloat(cash).toFixed(2)}`;
-
-// // Helper function to get total cash
-// const getTotalCash = async (client, user_id) => {
-//   const res = await client.query(
-//     `
-//     SELECT total_cash
-//     FROM "user"
-//     WHERE id = $1`,
-//     [user_id]
-
-//   );
-//   return res.rows[0];
-// };
-
-// // Helper function to update total cash
-// const updateTotalCash = async (client, user_id, total_cash) => {
-//   await client.query(
-//     `
-//     UPDATE "user"
-//     SET total_cash = $1
-//     WHERE id = $2`,
-//     [total_cash, user_id]
-//   );
-// };
-
-// // Helper function to get inventory item details
-// const getInventoryItem = async (client, inventory_id) => { 
-//   try {
-//     const res = await client.query(
-//       `
-//       SELECT
-//         inventory.id AS inventory_id,
-//         inventory.user_id,
-//         inventory.fruit_id,
-//         inventory.quantity,
-//         inventory.purchase_price,
-//         fruits.name AS fruit_name,
-//         fruits.current_price,
-//         "user".username
-//       FROM
-//         inventory
-//       JOIN
-//         fruits ON inventory.fruit_id = fruits.id
-//       JOIN
-//         "user" ON inventory.user_id = "user".id
-//       WHERE
-//         inventory.id = $1`,
-//       [inventory_id]
-//     );
-//     return res.rows[0];
-//   } catch (error) {
-//     console.error('Error fetching inventory item:', error.stack);
-//     throw error;
-//   }
-// };
-
-// // Helper function to update inventory
-// const updateInventory = async (client, inventory_id, quantity) => {
-//   await client.query(
-//     `
-//     UPDATE inventory 
-//     SET quantity = $1 
-//     WHERE id = $2`,
-//     [quantity, inventory_id]
-//   );
-// };
-
-// // Helper function to delete inventory item
-// const deleteInventoryItem = async (client, inventory_id) => {
-//   await client.query(
-//     `
-//     DELETE FROM inventory
-//     WHERE id = $1`,
-//     [inventory_id]
-//   );
-// };
-
-
-
-
 // Buy Route
 router.post('/buy', async (req, res) => {
   const { user_id, fruit_id, quantity, purchase_price } = req.body;
@@ -197,8 +106,8 @@ router.post('/buy', async (req, res) => {
 });
 
 
-
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 
 
 // Helper function to validate and parse purchase price
@@ -295,6 +204,8 @@ const areNumbersEqual = (num1, num2, tolerance = 0.01) => {
   return Math.abs(num1 - num2) < tolerance;
 };
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 // Sell Route
 router.post('/sell', async (req, res) => {
@@ -307,7 +218,6 @@ router.post('/sell', async (req, res) => {
       .status(400)
       .json({ error: 'Missing or invalid required fields' });
   }
-
   
   let validatedPurchasePrice;
   try {
