@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require("../modules/pool");
 
 // Buy Route
-router.post('/buy', async (req, res) => {
+router.post("/buy", async (req, res) => {
   const { user_id, fruit_id, quantity, purchase_price } = req.body;
 
   if (
@@ -12,111 +12,118 @@ router.post('/buy', async (req, res) => {
     !quantity ||
     !purchase_price ||
     quantity < 1 ||
-    purchase_price < 0.50
+    purchase_price < 0.5
   ) {
     return res
       .status(400)
-      .json({ error: 'Missing or invalid required fields' });
+      .json({ error: "Missing or invalid required fields" });
   }
 
   try {
     // Validate and format purchase price
     const formattedPrice = validatePurchasePrice(purchase_price);
 
-
-  // Convert quantity to a numeric value
-  const numericQuantity = parseInt(quantity, 10);
-  if (isNaN(numericQuantity)) {
-    return res.status(400).json({ error: 'Invalid quantity' });
-  }
-  
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-
-    // Calculate the total purchase price
-    const totalPurchasePrice = (
-      numericQuantity * parseFloat(formattedPrice)
-    ).toFixed(2);
-
-    // Get current cash
-    const currentCashResult = await getTotalCash(client, user_id);
-    const currentCash = parseFloat(currentCashResult.total_cash) || 0;
- 
-    // Calculate new total cash
-    let newTotalCash = currentCash - parseFloat(totalPurchasePrice);
-
-    // Check for sufficient funds
-    if (newTotalCash < 0) {
-      throw new Error('Insufficient funds');
+    // Convert quantity to a numeric value
+    const numericQuantity = parseInt(quantity, 10);
+    if (isNaN(numericQuantity)) {
+      return res.status(400).json({ error: "Invalid quantity" });
     }
 
-    // Insert into inventory and collect all inventory IDs
-    const inventoryIds = []
-    for (let i = 0; i < quantity; i++) {
-      const inventoryResult = await client.query(
-        `INSERT INTO inventory (user_id, fruit_id, quantity, purchase_price) 
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      // Calculate the total purchase price
+      const totalPurchasePrice = (
+        numericQuantity * parseFloat(formattedPrice)
+      ).toFixed(2);
+
+      // Get current cash
+      const currentCashResult = await getTotalCash(client, user_id);
+      const currentCash = parseFloat(currentCashResult.total_cash) || 0;
+
+      // Calculate new total cash
+      let newTotalCash = currentCash - parseFloat(totalPurchasePrice);
+
+      // Check for sufficient funds
+      if (newTotalCash < 0) {
+        throw new Error("Insufficient funds");
+      }
+
+      // Insert into inventory and collect all inventory IDs
+      const inventoryIds = [];
+      for (let i = 0; i < quantity; i++) {
+        const inventoryResult = await client.query(
+          `INSERT INTO inventory (user_id, fruit_id, quantity, purchase_price) 
         VALUES ($1, $2, $3, $4) 
         RETURNING id`,
-        [user_id, fruit_id, 1, formattedPrice]
+          [user_id, fruit_id, 1, formattedPrice]
+        );
+        inventoryIds.push(inventoryResult.rows[0].id);
+      }
+
+      // Update total cash
+      await updateTotalCash(client, user_id, newTotalCash.toFixed(2));
+
+      await client.query("COMMIT");
+
+      // Fetch updated user details
+      const updatedUser = await client.query(
+        'SELECT * FROM "user" WHERE id = $1',
+        [user_id]
       );
-      inventoryIds.push(inventoryResult.rows[0].id);
+
+      // Fetch detailed information for all inventory items
+      const inventoryDetailsPromises = inventoryIds.map((id) =>
+        getInventoryItem(client, id)
+      );
+      const inventoryDetails = await Promise.all(inventoryDetailsPromises);
+
+      res.status(201).json({
+        newTotalCash: formatCash(newTotalCash),
+        updatedUser: updatedUser.rows[0],
+        inventoryDetails,
+        inventoryIds,
+      });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error("Error buying fruit:", error);
+      if (error.message === "Insufficient funds") {
+        return res.status(400).json({ error: "Insufficient funds" });
+      }
+      res
+        .status(500)
+        .json({ error: "Failed to buy fruit", details: error.message });
+    } finally {
+      client.release();
     }
-
-    // Update total cash
-    await updateTotalCash(client, user_id, newTotalCash.toFixed(2));
-
-
-    await client.query('COMMIT');
-
-    // Fetch updated user details
-    const updatedUser = await client.query(
-      'SELECT * FROM "user" WHERE id = $1',
-      [user_id]
-    );
-
-    // Fetch detailed information for all inventory items
-    const inventoryDetailsPromises = inventoryIds.map(id => getInventoryItem(client, id));
-    const inventoryDetails = await Promise.all(inventoryDetailsPromises);
-
-    res.status(201).json({
-      newTotalCash: formatCash(newTotalCash),
-      updatedUser: updatedUser.rows[0],
-      inventoryDetails,
-      inventoryIds,
-    });
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error buying fruit:', error);
-    if (error.message === 'Insufficient funds') {
-      return res.status(400).json({ error: 'Insufficient funds' });
-    }
+    console.error("Error in /buy route:", error);
     res
       .status(500)
-      .json({ error: 'Failed to buy fruit', details: error.message });
-  } finally {
-    client.release();
+      .json({ error: "Failed to buy fruit", details: error.message });
   }
-} catch (error) {
-  console.error('Error in /buy route:', error);
-  res
-    .status(500)
-    .json({ error: 'Failed to buy fruit', details: error.message });
-}
 });
 
-
 //--------------------------------------------------------------
 //--------------------------------------------------------------
-
 
 // Helper function to validate and parse purchase price
 const validatePurchasePrice = (purchase_price) => {
   const numericPurchasePrice = parseFloat(purchase_price);
-  if (isNaN(numericPurchasePrice) || numericPurchasePrice <= 0.50) {
-    throw new Error('Invalid purchase price');
+  if (isNaN(numericPurchasePrice) || numericPurchasePrice <= 0.5) {
+    throw new Error("Invalid purchase price");
   }
   return numericPurchasePrice.toFixed(2);
+};
+
+// Helper function to validate and parse purchase price
+const validateCurrentPrice = (current_price) => {
+  const numericCurrentPrice = parseFloat(current_price);
+  if (isNaN(numericCurrentPrice) || numericCurrentPrice <= 0.5) {
+    throw new Error("Invalid current price");
+  }
+  return numericCurrentPrice.toFixed(2);
 };
 
 // Helper function to format cash
@@ -130,7 +137,6 @@ const getTotalCash = async (client, user_id) => {
     FROM "user"
     WHERE id = $1`,
     [user_id]
-
   );
   return res.rows[0];
 };
@@ -146,9 +152,8 @@ const updateTotalCash = async (client, user_id, total_cash) => {
   );
 };
 
-
 // Helper function to get inventory item details
-const getInventoryItem = async (client, inventory_id, purchase_price) => { 
+const getInventoryItem = async (client, inventory_id, purchase_price) => {
   try {
     const res = await client.query(
       `
@@ -173,7 +178,7 @@ const getInventoryItem = async (client, inventory_id, purchase_price) => {
     );
     return res.rows[0];
   } catch (error) {
-    console.error('Error fetching inventory item:', error.stack);
+    console.error("Error fetching inventory item:", error.stack);
     throw error;
   }
 };
@@ -208,73 +213,79 @@ const areNumbersEqual = (num1, num2, tolerance = 0.01) => {
 //-------------------------------------------------------------------------
 
 // Sell Route
-router.post('/sell', async (req, res) => {
-  console.log('Received sell request with data:', req.body);
-  const { user_id, inventory_id, quantity,  purchase_price, } = req.body;
+router.post("/sell", async (req, res) => {
+  console.log("Received sell request with data:", req.body);
+  const { user_id, inventory_id, quantity, current_price  } = req.body;
 
-  if (!user_id || !inventory_id || !quantity || !purchase_price || quantity <= 0 || purchase_price <= 0) {
-    console.error('Missing required fields');
+  if (
+    !user_id ||
+    !inventory_id ||
+    !quantity ||
+    !current_price ||
+    quantity <= 0 ||
+    current_price <= 0
+  ) {
+    console.error("Missing required fields");
     return res
       .status(400)
-      .json({ error: 'Missing or invalid required fields' });
+      .json({ error: "Missing or invalid required fields" });
   }
-  
-  let validatedPurchasePrice;
+
+  let validatedCurrentPrice;
   try {
-    validatedPurchasePrice = validatePurchasePrice(purchase_price);
+    validatedCurrentPrice = validateCurrentPrice(current_price);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 
   const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    await client.query("BEGIN");
 
-     // Get the stored price for the specific inventory item
+    // Get the stored price for the specific inventory item
     //  const storedPrice = await getStoredPrice(inventory_id, user_id);
 
-     // Compare the provided price with the stored price
+    // Compare the provided price with the stored price
     //  if (!areNumbersEqual(parseFloat(parsedPurchasePrice), parseFloat(storedPrice))) {
     //    throw new Error('Provided purchase price does not match the inventory item');
-    //  } 
+    //  }
 
     // Get the inventory item
     const inventoryItem = await getInventoryItem(client, inventory_id);
 
     if (!inventoryItem) {
-      throw new Error('Inventory item not found');
+      throw new Error("Inventory item not found");
     }
     if (inventoryItem.user_id !== user_id) {
-      throw new Error('Inventory item does not belong to the user');
+      throw new Error("Inventory item does not belong to the user");
     }
     if (inventoryItem.quantity <= 0) {
-      throw new Error('Item quantity is zero or negative');
+      throw new Error("Item quantity is zero or negative");
     }
 
-
     // Format the stored purchase price to two decimal places
-    const storedPrice = parseFloat(inventoryItem.purchase_price).toFixed(2);
-    const providedPrice = parseFloat(purchase_price).toFixed(2);
-   
-
+    const storedPrice = parseFloat(inventoryItem.current_price);
+    const providedPrice = parseFloat(current_price);
+    
+    // Log the values for debugging
     console.log(`Comparing prices for inventory_id: ${inventory_id}`);
     console.log(`Provided price: ${providedPrice}, Stored price: ${storedPrice}`);
-
-     // Validate purchase price with a small margin of error
-     if (!areNumbersEqual(parseFloat(providedPrice), parseFloat(storedPrice))) {
-      console.warn('this has been the most annoying error yet.');
+    
+    // Validate prices with a small margin of error
+    if (!areNumbersEqual(providedPrice, storedPrice)) {
+      console.warn("this has been the most annoying error yet.");
     }
 
     // Calculate updated quantity
     const updatedQuantity = inventoryItem.quantity - quantity;
-    
+
     if (updatedQuantity < 0) {
       throw new Error("Not enough quantity available");
     }
 
     // Calculate total sale value based on provided purchasePrice
     const totalSaleValue = parseFloat(providedPrice) * quantity;
-       
+
     // Get the current cash
     const totalCashResult = await getTotalCash(client, user_id);
     const currentTotalCash = parseFloat(totalCashResult.total_cash);
@@ -295,15 +306,14 @@ router.post('/sell', async (req, res) => {
       await deleteInventoryItem(client, inventory_id);
     }
 
-    await client.query('COMMIT');
+    await client.query("COMMIT");
 
-    res.json({ newTotalCash: formatCash(newTotalCash) 
-    });
+    res.json({ newTotalCash: formatCash(newTotalCash) });
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error selling item from inventory:', error.stack);
+    await client.query("ROLLBACK");
+    console.error("Error selling item from inventory:", error.stack);
     res.status(500).json({
-      error: 'Error selling item from inventory',
+      error: "Error selling item from inventory",
       details: error.message,
     });
   } finally {
@@ -312,4 +322,3 @@ router.post('/sell', async (req, res) => {
 });
 
 module.exports = router;
-

@@ -4,8 +4,8 @@ export const groupByFruitId = (inventory) => {
       }
 
   const grouped = {};
-  inventory.forEach((fruitItem) => {
-    const { inventory_id, fruit_id, fruit_name, purchase_price, quantity } = fruitItem;
+  inventory.forEach((fruitItem, index) => {
+    const { inventory_id, fruit_id, fruit_name, purchase_price, current_price, quantity } = fruitItem;
     // console.log("Processing fruitItem:", fruitItem);
     // console.log("Type of fruit_id:", typeof fruit_id);
     // console.log("Value of fruit_id:", fruit_id);
@@ -23,7 +23,6 @@ export const groupByFruitId = (inventory) => {
         items: [],
         totalQuantity: 0,
         totalPurchasePrice: 0,
-        lastPurchasePrice: 0,
       };
     }
     const numericPrice = Number(purchase_price);
@@ -31,7 +30,8 @@ export const groupByFruitId = (inventory) => {
     if (!isNaN(numericPrice)) {
       grouped[fruit_id].items.push({
         purchase_price: numericPrice,
-        inventory_id,
+        current_price: current_price,
+        inventory_id: inventory_id,
         quantity: numericQuantity,
       });
       grouped[fruit_id].totalQuantity += 1; 

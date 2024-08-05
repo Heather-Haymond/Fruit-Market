@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import useUserInventory from "../../hooks/useUserInventory";
+import useCurrentPrices from "../../hooks/useCurrentPrices";
 import { groupByFruitId } from "../../utils/aggregateData";
 import InventoryItem from "./InventoryItem";
-import { useSelector } from "react-redux";
 import {
   Container,
   Typography,
@@ -14,11 +15,18 @@ import {
 } from "@mui/material";
 
 const UserInventory = () => {
+  const dispatch = useDispatch();
   const { inventory, error } = useUserInventory();
+  const { currentPrices, loading: pricesLoading, error: pricesError } = useCurrentPrices();
   const currentUser = useSelector((state) => state.user);
 
+  useEffect(() => {
+    dispatch({ type: 'FETCH_CURRENT_PRICES_REQUEST' });
+  }, [dispatch]);
+
   if (error) return <div>Error: {error}</div>;
-  if (!inventory || inventory.length === 0) return <div>Loading...</div>;
+  if (pricesError) return <div>Error loading prices: {pricesError}</div>;
+  if (!inventory ) return <div>Loading...</div>;
 
   const groupedInventory = groupByFruitId(inventory);
 
@@ -39,7 +47,9 @@ const UserInventory = () => {
                   <InventoryItem
                     fruit={{
                       id: group.id,
+                      name: group.name,
                       purchase_price: item.purchase_price,
+                      current_price: currentPrices[group.id],
                       inventory_id: item.inventory_id,
                     }}
                     user={{ id: currentUser.id }}

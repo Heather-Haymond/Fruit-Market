@@ -2,19 +2,29 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 
-const SellButton = ({fruit_id, user_id, inventory_id, quantity,  purchase_price, last_purchase_price }) => {
+const SellButton = ({fruit_id, user_id, inventory_id, quantity,  current_price}) => {
   const dispatch = useDispatch();
 
   const handleSell = () => {
+    // Convert current_price to a number
+    console.log('Type of current_price:', typeof current_price); // expected: 'number'
+    console.log('Current Price (raw):', current_price); //expected: Raw value
+    const numericPrice = parseFloat(current_price);
+    console.log('Type of numericPrice:', typeof numericPrice); // expected: 'number'
+    console.log('Current Price (numeric):', numericPrice); // expected: Numeric conversion
+
+    if (isNaN(numericPrice) || numericPrice <= 0) {
+      console.error("Invalid current price:", numericPrice);
+      return;
+    }
+
     console.log('Exact values being sent to server:', {
       fruit_id,
       user_id,
       inventory_id,
       quantity,
-      purchase_price: Number(purchase_price).toFixed(2),
-      last_purchase_price: Number(last_purchase_price).toFixed(2),
+      current_price: numericPrice.toFixed(2),
     });
-
 
     if (fruit_id > 0 && user_id) {
       dispatch({
@@ -24,8 +34,7 @@ const SellButton = ({fruit_id, user_id, inventory_id, quantity,  purchase_price,
           user_id,
           inventory_id,
           quantity,
-          purchase_price: Number(purchase_price).toFixed(2),
-          last_purchase_price: Number(last_purchase_price).toFixed(2),
+          current_price: Number(current_price).toFixed(2),
         },
       });
     } else {
@@ -34,9 +43,7 @@ const SellButton = ({fruit_id, user_id, inventory_id, quantity,  purchase_price,
         user_id,
         inventory_id,
         quantity,
-        purchase_price: Number(purchase_price),
-        last_purchase_price: Number(last_purchase_price).toFixed(2),
-
+        current_price: Number(current_price).toFixed(2),
       });
     }
   };

@@ -8,7 +8,7 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
     id: fruitId,
     purchase_price,
     inventory_id,
-    last_purchase_price,
+    current_price,
     quantity: initialQuantity = 1,
   } = fruit || {};
 
@@ -48,6 +48,7 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
   return (
     <div className="inventory-item">
       <span>{fruit.name}</span>
+      <span>  Price Purchased: ${purchase_price.toFixed(2)}</span>
       {/* <input
         type="number"
         value={quantity}
@@ -55,12 +56,12 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
         min="1"
         placeholder="Quantity"
       /> */}
-      Price: ${purchase_price.toFixed(2)}
+      Selling Price: ${fruit.current_price ? Number(fruit.current_price).toFixed(2) : 'N/A'}
       {isOwner && (
         <SellButton
           fruit_id={fruitId}
           purchase_price={Number(purchase_price)}
-          last_purchase_price={last_purchase_price} 
+          current_price={Number(current_price)}
           user_id={userId}
           inventory_id={inventory_id}
           quantity={quantity}

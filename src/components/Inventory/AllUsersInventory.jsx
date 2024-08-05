@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Box, Typography, Paper, Divider } from '@mui/material';
 import useFetchAllInventories from '../../hooks/useFetchAllInventories';
+import useCurrentPrices from '../../hooks/useCurrentPrices'; 
 import { groupByFruitId } from "../../utils/aggregateData"; 
 import InventoryItem from './InventoryItem';
 
-const AllUsersInventory = ({ currentUser }) => {
-  const { inventories, error } = useFetchAllInventories();
-  console.log("Fetched inventories:", inventories);
 
-  if (error) return <div>Error: {error}</div>;
-  if (!inventories || inventories.length === 0) return <div>Loading...</div>;
+const AllUsersInventory = ({ currentUser }) => {
+  const dispatch = useDispatch();
+  const { inventories, error } = useFetchAllInventories();
+  const { currentPrices, loading: pricesLoading, error: pricesError } = useCurrentPrices();
+
+  useEffect(() => {
+    dispatch({ type: 'FETCH_CURRENT_PRICES' });
+  }, [dispatch]);
+
+  console.log("Fetched inventories:", inventories);
+  console.log("Current prices:", currentPrices);
+
+  if (error || pricesError) return <div>Error: {error || pricesError}</div>;
+  if (!inventories || inventories.length === 0 || pricesLoading) return <div>Loading...</div>;
 
   const groupedByUser = inventories.reduce((acc, userInventory) => {
     console.log("userInventory:", userInventory);
@@ -56,7 +67,8 @@ const AllUsersInventory = ({ currentUser }) => {
                       fruit={{ 
                         id: group.id,
                         purchase_price: item.purchase_price,
-                        inventory_id: item.inventory_id 
+                        inventory_id: item.inventory_id,
+                        current_price: currentPrices[group.id],
                       }}
                       user={{ id: user.id }} 
                       currentUser={currentUser}

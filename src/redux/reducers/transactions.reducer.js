@@ -1,5 +1,6 @@
 const initialState = {
     inventory: {},
+    totalCash: 100.00,
     error: null,
   };
   
@@ -16,35 +17,34 @@ const initialState = {
           totalCash: newTotalCash,
           error: null,
         };
-  
-      case "BUY_FRUIT_FAILURE":
+
+        case "BUY_FRUIT_FAILURE":
+          return {
+            ...state,
+            error: action.payload,
+          };
+          case "UPDATE_CASH":
         return {
           ...state,
-          error: action.payload,
+          totalCash: action.payload,
         };
-        // if used as an array of inventory items
-        // case "SELL_FRUIT_SUCCESS":
-        //   const { inventory_id, quantity, purchase_price } = action.payload;
-    
-        //   // Update the inventory item by ID
-        //   const updatedInventory = state.inventory.map(item => 
-        //     item.inventory_id === inventory_id
-        //       ? { ...item, quantity: item.quantity - quantity, purchase_price }
-        //       : item
-        //   ).filter(item => item.quantity > 0); // Optionally filter out items with zero quantity
-    
-        //   return {
-        //     ...state,
-        //     inventory: updatedInventory,
-        //     error: null,
-        //   };
+      case "TRANSACTION_SUCCESS":
+        return {
+          ...state,
+          transactionError: null,
+        };
+      case "TRANSACTION_FAILURE":
+        return {
+          ...state,
+          transactionError: action.error,
+        };
 
       case "SELL_FRUIT_SUCCESS":
-        const { id, quantity, purchase_price } = action.payload;
+        const { id, quantity, current_price } = action.payload;
        
         console.log('SELL_FRUIT_SUCCESS - id:', id, 'quantity:', quantity);
         if (quantity <= 0 || isNaN(quantity) || !state.inventory[id]) {
-          console.error('Invalid quantityor item not found:', quantity, id);
+          console.error('Invalid quantity or item not found:', quantity, id);
           return state;
         }
 

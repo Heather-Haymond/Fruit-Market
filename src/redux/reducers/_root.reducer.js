@@ -16,6 +16,7 @@ const rootReducer = combineReducers({
   user, // will have an id and username if someone is logged in
   fruit,
   inventory,
+  
 });
 
 export default rootReducer;
