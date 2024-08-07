@@ -2,8 +2,7 @@ const initialState = {
 fruits: [],    
 currentPrices: {}, 
 previousPrices: {},           // Previous prices that are kept on error
-  error: null,                // add images here:fruits: [
-  userCash: 100.00,           // { id: 1, name: 'Apple', purchase_price: 1.99, imageName: 'apple' },
+  error: null,                // add images here:fruits: [                             // { id: 1, name: 'Apple', purchase_price: 1.99, imageName: 'apple' },
 };                              // { id: 2, name: 'Orange', purchase_price: 2.49, imageName: 'orange' },
                                 //],
   

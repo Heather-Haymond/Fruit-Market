@@ -1,4 +1,4 @@
-const { pool } = require('../db/pool'); // Adjust the path as necessary
+const { pool } = require('../db/pool'); 
 const { getInventoryItem, getTotalCash, updateTotalCash, updateInventory, deleteInventoryItem, formatCash } = require('../db/helpers'); // Adjust paths as necessary
 
 async function processSellTransaction(user_id, fruit_id, quantity, current_price, inventory_id) {

@@ -32,13 +32,24 @@ function* fetchInventoryId(user_id, fruit_id, inventory_id) {
 // Selector to get the current price of the fruit
 
 const selectCurrentPrice = (state, fruit_id) =>
-  state.prices.currentPrices.find((price) => price.id === fruit_id)
-    ?.current_price;
+  state.fruit.currentPrices ? state.fruit.currentPrices[fruit_id] : undefined;
+   
 
 function* sellSaga(action) {
   try {
-    const { fruit_id, user_id, quantity, inventory_id, current_price } =
+    const { fruit_id, user_id, quantity, inventory_id, current_price,  newTotalCash } = 
       action.payload;
+
+      const state = yield select();
+    console.log("Current state in sellSaga:", state);
+    console.log("Current prices:", state.fruit.currentPrices);
+
+    // Get the current price from the state
+    const stateCurrentPrice = yield select((state) => selectCurrentPrice(state, fruit_id));
+    console.log("Current price from state for fruit_id", fruit_id, ":", stateCurrentPrice);
+
+    // Use the price from the state if available, otherwise use the one from the payload
+    const finalCurrentPrice = stateCurrentPrice !== undefined ? stateCurrentPrice : current_price;
 
       // Ensure current_price is a valid number
     const parsedPrice = parseFloat(current_price);
@@ -57,7 +68,7 @@ function* sellSaga(action) {
       state.fruit.fruits.find((fruit) => fruit.id === fruit_id)
     );
 
-    const currentPrice = fruit ? fruit.current_price : null;
+    const currentPrice = yield select((state) => selectCurrentPrice(state, fruit_id));
 
     // Ensure currentPrice is a valid number
     if (isNaN(currentPrice)) {
@@ -65,29 +76,33 @@ function* sellSaga(action) {
     }
 
     console.log("Selected fruit:", fruit);
-
-    console.log("Sell fruit payload:", {
-      fruit_id,
-      user_id,
-      quantity,
-      inventory_id,
-      current_price,
-    });
     console.log('Full payload:', action.payload);
+
     const response = yield call(axios.post, "/api/transactions/sell", {
       user_id,
       fruit_id,
       quantity,
       current_price: Number(current_price),
-      inventory_id,
+      inventory_id: yield call(fetchInventoryId, user_id, fruit_id, inventory_id),
     });
 
     // Log the state after processing
     const stateAfter = yield select();
     console.log("State after selling fruit:", stateAfter);
     console.log("Sell fruit response:", response.data);
-    yield put({ type: "UPDATE_USER", payload: response.data.user });
-    yield put({ type: "SELL_FRUIT_SUCCESS", payload: response.data });
+    if (response.data && response.data.newTotalCash) {
+      const newTotalCash = parseFloat(response.data.newTotalCash.replace('$', ''));
+    yield put({ type: "UPDATE_USER", payload: { total_cash: newTotalCash } });
+  // } else {
+  //   console.error("User data not found in response:", response.data);
+  //   throw new Error("User data not found in response");
+  // }
+    yield put({ type: "SELL_FRUIT_SUCCESS",
+     payload: response.data, total_cash: newTotalCash });
+    } else {
+      console.error("New total cash not found in response:", response.data);
+      throw new Error("New total cash not found in response");
+    }
   } catch (error) {
     console.error("Sell fruit error:", error);
     yield put({ type: "SELL_FRUIT_FAILURE", payload: error.message });
@@ -155,7 +170,7 @@ function* performTransactionSaga(action) {
     yield put({ type: TRANSACTION_SUCCESS }); // Dispatch success action
   } catch (error) {
     console.error("Error in transaction saga:", error);
-    yield put({ type: TRANSACTION_FAILURE, error }); // Dispatch failure action
+    yield put({ type: TRANSACTION_FAILURE, error }); 
   }
 }
 

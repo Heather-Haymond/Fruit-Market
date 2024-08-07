@@ -14,6 +14,18 @@ const userReducer = (state = initialState, action) => {
     };
     case 'UNSET_USER':
       return {};
+      case "UPDATE_USER":
+        if (!action.payload) {
+          console.error("UPDATE_USER action received with undefined payload");
+          return state;
+        }
+        return {
+          ...state,
+          ...action.payload,
+          total_cash: action.payload.total_cash !== undefined 
+          ? action.payload.total_cash 
+          : state.total_cash
+      };
       case "BUY_FRUIT_SUCCESS":
         return {
           ...state,

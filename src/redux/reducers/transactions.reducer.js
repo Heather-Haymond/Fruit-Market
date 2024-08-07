@@ -1,5 +1,6 @@
 const initialState = {
     inventory: {},
+    currentPrices: {},
     totalCash: 100.00,
     error: null,
   };
@@ -47,7 +48,8 @@ const initialState = {
           console.error('Invalid quantity or item not found:', quantity, id);
           return state;
         }
-
+        case "SELL_FRUIT_FAILURE":
+          console.error('SELL_FRUIT_FAILURE - error:', action.payload);
         const fruit = state.inventory[id];
 
         // Validate the purchase price
@@ -73,15 +75,9 @@ const initialState = {
         return {
           ...state,
           inventory: updatedInventory,
+          totalCash: newTotalCash,
           error: null,
         };
-
-        case "SELL_FRUIT_FAILURE":
-          console.error('SELL_FRUIT_FAILURE - error:', action.payload);
-          return {
-            ...state,
-            error: action.payload,
-          };
     
      default:
       return state;
