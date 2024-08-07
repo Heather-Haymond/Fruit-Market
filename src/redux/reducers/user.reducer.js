@@ -41,8 +41,8 @@ const userReducer = (state = initialState, action) => {
     case "SELL_FRUIT_SUCCESS":
       return {
         ...state,
-        total_cash: (
-          parseFloat(state.total_cash) + parseFloat(action.payload.sellPrice)).toFixed(2),
+        total_cash: 
+          parseFloat(action.payload.newTotalCash).toFixed(2),
         error: null,
       };
     default:

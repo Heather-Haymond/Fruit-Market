@@ -8,8 +8,8 @@ const useUserInventory = () => {
   const currentPrices = useSelector((state) => state.fruit.currentPrices);
 
   useEffect(() => {
-    console.log("User ID:", userId);
-    console.log("current_price:", currentPrices);
+    // console.log("User ID:", userId);
+    // console.log("current_price:", currentPrices);
 
     const fetchInventory = async () => {
       try {
@@ -18,7 +18,7 @@ const useUserInventory = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log("API response data:", data);
+        // console.log("API response data:", data);
 
         // Check if data is an object or array and handle accordingly
         let userInventory = [];

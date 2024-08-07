@@ -6,7 +6,7 @@ const BuyButton = ({ fruit }) => {
   const user = useSelector((state) => state.user);
 
   const handleBuyFruit = () => {
-    const purchasePrice = parseFloat(fruit.current_price);
+    const purchasePrice = parseFloat(fruit.current_price).toFixed(2);
     const userId = user.id;
 
      if (isNaN(purchasePrice) || purchasePrice < 0.50) {

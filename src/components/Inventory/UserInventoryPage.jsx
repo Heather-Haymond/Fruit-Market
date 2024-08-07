@@ -22,13 +22,13 @@ const UserInventory = () => {
   const currentUser = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log("Dispatching FETCH_CURRENT_PRICES from UserInventory");
+    // console.log("Dispatching FETCH_CURRENT_PRICES from UserInventory");
     dispatch({ type: 'FETCH_CURRENT_PRICES' });
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("Current Prices:", currentPrices);
-    console.log("User Inventory:", inventory);
+    // console.log("Current Prices:", currentPrices);
+    // console.log("User Inventory:", inventory);
   }, [currentPrices, inventory]);
 
   if (error) return <div>Error: {error}</div>;
@@ -36,8 +36,8 @@ const UserInventory = () => {
   if (!inventory ) return <div>Loading...</div>;
 
   const groupedInventory = groupByFruitId(inventory);
-  console.log("Current Prices:", currentPrices);
-  console.log("Grouped Inventory:", groupedInventory);
+  // console.log("Current Prices:", currentPrices);
+  // console.log("Grouped Inventory:", groupedInventory);
   return (
     <Container>
       <Typography variant="h3" gutterBottom>

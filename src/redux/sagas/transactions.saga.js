@@ -37,12 +37,9 @@ const selectCurrentPrice = (state, fruit_id) =>
 
 function* sellSaga(action) {
   try {
-    const { fruit_id, user_id, quantity, inventory_id, current_price,  newTotalCash } = 
-      action.payload;
+    const { fruit_id, user_id, quantity, inventory_id, current_price} = action.payload;
 
-      const state = yield select();
-    console.log("Current state in sellSaga:", state);
-    console.log("Current prices:", state.fruit.currentPrices);
+      console.log("Sell fruit payload:", action.payload);
 
     // Get the current price from the state
     const stateCurrentPrice = yield select((state) => selectCurrentPrice(state, fruit_id));
@@ -52,21 +49,18 @@ function* sellSaga(action) {
     const finalCurrentPrice = stateCurrentPrice !== undefined ? stateCurrentPrice : current_price;
 
       // Ensure current_price is a valid number
-    const parsedPrice = parseFloat(current_price);
-    if (isNaN(parsedPrice)) {
+    const parsedCurrentPrice = parseFloat(finalCurrentPrice).toFixed(2);
+    if (isNaN(parsedCurrentPrice)) {
       throw new Error("Invalid current price");
     }
 
-    console.log("Parsed current price:", parsedPrice);
+    console.log("Parsed current price:", parsedCurrentPrice
+    )
 
-    // Log the state before processing
-    const stateBefore = yield select();
-
-    console.log("State before selling fruit:", stateBefore);
-
-    const fruit = yield select((state) =>
-      state.fruit.fruits.find((fruit) => fruit.id === fruit_id)
-    );
+     // Validate current_price before sending to the server
+     if (parsedCurrentPrice < 0.50) {
+      throw new Error('Invalid selling price');
+    }
 
     const currentPrice = yield select((state) => selectCurrentPrice(state, fruit_id));
 
@@ -74,9 +68,6 @@ function* sellSaga(action) {
     if (isNaN(currentPrice)) {
       throw new Error("Invalid current price");
     }
-
-    console.log("Selected fruit:", fruit);
-    console.log('Full payload:', action.payload);
 
     const response = yield call(axios.post, "/api/transactions/sell", {
       user_id,
@@ -86,23 +77,37 @@ function* sellSaga(action) {
       inventory_id: yield call(fetchInventoryId, user_id, fruit_id, inventory_id),
     });
 
-    // Log the state after processing
-    const stateAfter = yield select();
-    console.log("State after selling fruit:", stateAfter);
-    console.log("Sell fruit response:", response.data);
+    const { newTotalCash, updatedInventory } = response.data;
+    const parsedNewTotalCash = parseFloat(newTotalCash.replace('$', ''));
+
+    const formattedTotalCash = formatCash(parseFloat(newTotalCash));
+    console.log("SOLD New total cash:", formatCash(parseFloat(newTotalCash)));
+    console.log("Updated inventory:", updatedInventory);
+    console.log("sell fruit response:", response.data);
+
     if (response.data && response.data.newTotalCash !== undefined) {
-      const newTotalCash = parseFloat(response.data.newTotalCash.replace('$', ''));
-      console.log("Updating total cash in sellSaga:", newTotalCash);
-    yield put({ type: "UPDATE_USER", payload: { total_cash: newTotalCash } });
-    yield put({ type: "SELL_FRUIT_SUCCESS",
-     payload: response.data, total_cash: newTotalCash });
+      const parsedNewTotalCash = parseFloat(response.data.newTotalCash.replace('$', ''));
+      console.log("Updating total cash in sellSaga:", parsedNewTotalCash);
+    yield put({ 
+      type: "UPDATE_USER",
+      payload: { ...response.data.user, total_cash: parsedNewTotalCash } 
+    });
+    yield put({ 
+      type: "SELL_FRUIT_SUCCESS",
+      payload:  { 
+        id: fruit_id, 
+        quantity, 
+        current_price: parsedCurrentPrice,
+        newTotalCash: parsedNewTotalCash
+      }
+     });
     } else {
       console.error("New total cash not found in response:", response.data);
       throw new Error("New total cash not found in response");
     }
   } catch (error) {
     console.error("Sell fruit error:", error);
-    yield put({ type: "SELL_FRUIT_FAILURE", payload: error.message });
+    yield put({ type: "SELL_FRUIT_FAILURE", payload: error.response?.data || error.message});
   }
 }
 
@@ -131,7 +136,7 @@ function* buySaga(action) {
     const parsedNewTotalCash = parseFloat(newTotalCash.replace('$', ''));
 
     const formattedTotalCash = formatCash(parseFloat(newTotalCash));
-    console.log("New total cash:", formatCash(parseFloat(newTotalCash)));
+    console.log("BUY New total cash:", formatCash(parseFloat(newTotalCash)));
     console.log("Updated inventory:", updatedInventory);
     console.log("Buy fruit response:", response.data);
     console.log("Updating total cash in buySaga:", newTotalCash);

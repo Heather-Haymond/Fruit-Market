@@ -120,7 +120,7 @@ const validatePurchasePrice = (purchase_price) => {
 // Helper function to validate and parse purchase price
 const validateCurrentPrice = (current_price) => {
   const numericCurrentPrice = parseFloat(current_price);
-  if (isNaN(numericCurrentPrice) || numericCurrentPrice <= 0.50) {
+  if (isNaN(numericCurrentPrice) || numericCurrentPrice < 0.50) {
     throw new Error("Invalid current price");
   }
   return numericCurrentPrice.toFixed(2);
