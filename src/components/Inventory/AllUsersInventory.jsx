@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from 'react-redux';
 import { Box, Typography, Paper, Divider } from '@mui/material';
 import useFetchAllInventories from '../../hooks/useFetchAllInventories';
@@ -6,20 +7,23 @@ import useCurrentPrices from '../../hooks/useCurrentPrices';
 import { groupByFruitId } from "../../utils/aggregateData"; 
 import InventoryItem from './InventoryItem';
 
-
 const AllUsersInventory = ({ currentUser }) => {
+  const [inventory, setInventory] = useState([]);
   const dispatch = useDispatch();
-  const { inventories, error } = useFetchAllInventories();
-  const { currentPrices, loading: pricesLoading, error: pricesError } = useCurrentPrices();
+  const { inventories, error: inventoriesError } = useFetchAllInventories();
+  const { currentPrices, error: pricesError, loading: pricesLoading } = useCurrentPrices();
 
   useEffect(() => {
     dispatch({ type: 'FETCH_CURRENT_PRICES' });
   }, [dispatch]);
 
-  console.log("Fetched inventories:", inventories);
-  console.log("Current prices:", currentPrices);
+  useEffect(() => {
+    if (!currentPrices || Object.keys(currentPrices).length === 0) {
+      dispatch({ type: 'FETCH_CURRENT_PRICES' });
+    }
+  }, [dispatch, currentPrices]);
 
-  if (error || pricesError) return <div>Error: {error || pricesError}</div>;
+  if ( inventoriesError || pricesError) return <div>Error: { inventoriesError || pricesError}</div>;
   if (!inventories || inventories.length === 0 || pricesLoading) return <div>Loading...</div>;
 
   const groupedByUser = inventories.reduce((acc, userInventory) => {
@@ -52,15 +56,10 @@ const AllUsersInventory = ({ currentUser }) => {
                 <Box key={`group-${group.id}`}sx={{ marginBottom: 2 }}>
                   <Typography variant="h5">{group.name}</Typography>
                   <Typography>Average Purchase Price: ${group.averagePurchasePrice}</Typography>
-                  {group.items.map((item) => {
-                    // Ensure unique key assignment
-                    const key = item.inventory_id 
-                      ? `item-${item.inventory_id}` 
-                      : `user-${user.id}-group-${group.id}-index-${Math.random()}`;
+                  {group.items.map((item, index) => {
+                    // Generate a unique key using a combination of identifiers
+                    const key = `item-${group.id}-${item.inventory_id || index}-${item.purchase_price}`;
 
-                    if (!item.inventory_id) {
-                      console.log('Inventory item with undefined inventory_id:', item);
-                    }
                     return (
                       <InventoryItem 
                       key={key} 

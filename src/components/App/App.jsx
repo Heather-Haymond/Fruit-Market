@@ -23,7 +23,6 @@ import Inventory from '../Inventory/Inventory';
 import Market from '../Market/Market';
 import Wallet from '../Wallet/Wallet'; 
 import AverageTotal from '../Wallet/AverageTotal';
-import PriceUpdater from '../Market/PriceUpdater';
 import AllUsersInventory from '../Inventory/AllUsersInventory';
 import Chart from '../Charts/Chart';
 
@@ -77,9 +76,6 @@ function App() {
           <ProtectedRoute exact path="/average-total">
             <AverageTotal />
           </ProtectedRoute>
-          <ProtectedRoute exact path="/price-updater">
-          <PriceUpdater />
-        </ProtectedRoute>
         <ProtectedRoute exact path="/all-users-inventory">
             <AllUsersInventory currentUser={user} /> 
           </ProtectedRoute>

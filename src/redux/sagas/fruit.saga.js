@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from 'redux-saga/effects'; 
+import { call, put, takeLatest, delay, take } from 'redux-saga/effects'; 
 import axios from 'axios'; 
 
 function* fetchFruits() { 
@@ -18,35 +18,55 @@ function* updatePricesSaga(action) {
       const { data } = yield call(axios.put, '/api/fruits/prices');
       yield put({ type: 'UPDATE_PRICES_SUCCESS', payload: data });
       if (action.payload && typeof action.payload.callback === 'function') {
-        action.payload.callback(data);
+        // Call the callback about a successful price update
+        yield call(action.payload.callback);
       }
     } catch (error) {
       console.error('Error updating prices', error.response ? error.response.data : error.message);
       yield put({ type: 'UPDATE_PRICES_FAILURE', payload: error.message });
       if (action.payload && typeof action.payload.callback === 'function') {
-        action.payload.callback(null, error.message);
+        yield call(action.payload.callback, error.message);
       }
     }
   }
 
   function* fetchCurrentPricesSaga() {
     try {
-      console.log('Attempting to fetch current prices...');
       const response = yield call(axios.get, '/api/fruits/current-prices');
-      console.log('Received response:', response.data);
       yield put({ type: 'SET_CURRENT_PRICES', payload: response.data });
     } catch (error) {
-      console.error('Error fetching current prices:', error.message);
       yield put({ type: 'FETCH_CURRENT_PRICES_FAILED', payload: error.message });
     }
   }
   
+
+ // Periodic fetch and update prices saga
+ function* periodicFetchPricesSaga() {
+  while (true) {
+    // Dispatch update prices action with a callback
+    yield put({
+      type: 'UPDATE_PRICES',
+      payload: {
+        callback: () => new Promise((resolve) => resolve()) // Simple callback that resolves immediately
+      }
+    });
+
+    // Wait for the update prices action to complete
+    yield take('UPDATE_PRICES_SUCCESS');
+
+    // Fetch current prices after the update
+    yield call(fetchCurrentPricesSaga);
+
+    yield delay(15000); // Wait 15 seconds before repeating
+  }
+}
   
 function* fruitSaga() { 
 // console.log('fruitSaga is running'); 
 yield takeLatest('FETCH_FRUITS', fetchFruits);
 yield takeLatest('UPDATE_PRICES', updatePricesSaga);
 yield takeLatest('FETCH_CURRENT_PRICES', fetchCurrentPricesSaga);
+yield call(periodicFetchPricesSaga);
 } 
 
 export default fruitSaga; 

@@ -1,25 +1,37 @@
 const initialState = {
 fruits: [],    
-currentPrices: {},               // add images here:fruits: [
-  error: null,                // { id: 1, name: 'Apple', purchase_price: 1.99, imageName: 'apple' },
-  userCash: 100.00,            // { id: 2, name: 'Orange', purchase_price: 2.49, imageName: 'orange' },
-};                              //],
-                               
+currentPrices: {}, 
+previousPrices: {},           // Previous prices that are kept on error
+  error: null,                // add images here:fruits: [
+  userCash: 100.00,           // { id: 1, name: 'Apple', purchase_price: 1.99, imageName: 'apple' },
+};                              // { id: 2, name: 'Orange', purchase_price: 2.49, imageName: 'orange' },
+                                //],
   
 const fruitReducer = (state = initialState, action) => {
-  // console.log('fruitReducer called with action:', action);
   switch (action.type) {
-    case 'FETCH_CURRENT_PRICES_REQUEST':
-      return { ...state,
-        error: null, 
+    case 'FETCH_CURRENT_PRICES_SUCCESS':
+      return {
+          ...state,
+          previousPrices: state.currentPrices, 
+          currentPrices: action.payload,
+          fruits: state.fruits.map(fruit => ({
+            ...fruit,
+            current_price: action.payload[fruit.id]
+          })),
+          error: null
       };
     case 'SET_CURRENT_PRICES':
+      const newPrices = action.payload.reduce((acc, item) => {
+        acc[item.fruit_id] = item.current_price;
+        return acc;
+      }, {});
       return { 
         ...state, 
-        currentPrices: action.payload.reduce((acc, item) => {
-          acc[item.fruit_id] = item.current_price;
-          return acc;
-        }, {}),
+        currentPrices:  newPrices,
+        fruits: state.fruits.map(fruit => ({
+          ...fruit,
+          current_price: newPrices[fruit.id]
+        })),
         error: null 
       };
       case 'FETCH_CURRENT_PRICES_FAILED':
@@ -28,9 +40,14 @@ const fruitReducer = (state = initialState, action) => {
           };
     case "SET_FRUITS":
       // console.log('SET_FRUITS payload:', action.payload);
+      const initialPrices = action.payload.reduce((acc, fruit) => {
+        acc[fruit.id] = fruit.current_price;
+        return acc;
+      }, {});
       return {
         ...state,
-        ...action.payload,
+        fruits: action.payload,
+        currentPrices: initialPrices,
         error: null,
       };
     case "FETCH_FRUITS_ERROR":
@@ -40,9 +57,18 @@ const fruitReducer = (state = initialState, action) => {
         error: action.payload,
       };
       case "UPDATE_PRICES_SUCCESS":
+        const updatedPrices = action.payload.reduce((acc, fruit) => {
+          acc[fruit.id] = fruit.current_price;
+          return acc;
+        }, {});
       return { ...state,
-         fruits: action.payload, 
-         error: null };
+        currentPrices: updatedPrices,
+        fruits: action.payload.map(fruit => ({
+          ...fruit,
+          current_price: updatedPrices[fruit.id]
+        })),
+         error: null
+         };
          case 'UPDATE_PRICES_FAILURE':
           return {
             ...state,

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import LogOutButton from "../LogOutButton/LogOutButton";
-import PriceUpdater from "./PriceUpdater";
 import BuyButton from "../BuyButton/BuyButton";
-import FruitsList from "../FruitsList/FruitsList";
 import UserInventoryPage from "../Inventory/UserInventoryPage";
 import ToggleButton from "../Inventory/ToggleButton";
 import { Container, Grid, Card, CardContent, CardActions, Typography, Button, TextField} from '@mui/material';
-import FruitCard from "../FruitCard/FruitCard"; 
+import useCurrentPrices from '../../hooks/useCurrentPrices';
+
 // import UserChart from '../Charts/UserChart';
 
 
@@ -23,42 +22,41 @@ const Market = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const fruits = useSelector((state) => state.fruit);
-  // const inventory = useSelector((state) => state.inventory);
-  const error = useSelector((state) => state.error);
-  // const userInventory = useSelector((state) => state.userInventory);
-  const allUsersInventories = useSelector((state) => state.allUsersInventories);
-  // const [showAllUsersInventory, setShowAllUsersInventory] = useState(false);
+  const { currentPrices, loading, error } = useCurrentPrices();
 
   const [quantities, setQuantities] = useState({});
 
-  const handlePricesUpdate = (updatedPrices) => {
-    dispatch({
-      type: "SET_FRUIT",
-      payload: updatedPrices,
-    });
-  };
-
   useEffect(() => {
-    // console.log("Dispatching FETCH_FRUITS");
+     console.log("Dispatching FETCH_FRUITS and FETCH_CURRENT_PRICES from Market");
     dispatch({ type: "FETCH_FRUITS" });
-    // console.log("Fruits in MarketPlace:", fruits);
-    // console.log("Type of fruits:", typeof fruits);
-    // console.log("Is fruits an array?:", Array.isArray(fruits));
+    dispatch({ type: "FETCH_CURRENT_PRICES" });
   }, [dispatch]);
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  useEffect(() => {
+    console.log("Current Prices in Market:", currentPrices);
+    console.log("Fruits in Market:", fruits);
+  }, [currentPrices, fruits]);
+  // const handlePricesUpdate = (updatedPrices) => {
+  //   dispatch({
+  //     type: "SET_FRUIT",
+  //     payload: updatedPrices,
+  //   });
+  // };
 
+  if (error) return <Typography color="error">Error loading prices: {error}</Typography>;
   const hasFruits =
     fruits && typeof fruits === "object" && Object.keys(fruits).length > 0;
     
-    const handleQuantityChange = (fruitId, value) => {
-      setQuantities(prevQuantities => ({
-        ...prevQuantities,
-        [fruitId]: value
-      }));
-    };
+    // const handleQuantityChange = (fruitId, value) => {
+    //   setQuantities(prevQuantities => ({
+    //     ...prevQuantities,
+    //     [fruitId]: value
+    //   }));
+    // };
+
+    console.log("Fruits:", fruits);
+  console.log("Current Prices:", currentPrices);
+  
   return (
     <Container>
        <Typography variant="h2" gutterBottom>
@@ -66,7 +64,6 @@ const Market = () => {
       </Typography>
 
       {/* <p>Your ID is: {user.id}</p> */}
-      <PriceUpdater onPricesUpdate={handlePricesUpdate} /> 
       {/* <Wallet /> */}
       <Typography variant="h3" gutterBottom>
       Fruit Market
@@ -74,22 +71,22 @@ const Market = () => {
 
       {/* <FruitsList />  */}
       
-      {error ? (
-         <Typography color="error">Error: {error}</Typography>
-      ) : hasFruits ? (
+      {hasFruits ? (
         <Grid container spacing={4}>
           {Object.entries(fruits).map(([key, fruit]) => {
-            if (fruit && fruit.current_price && !isNaN(parseFloat(fruit.current_price))) {
-              return (
-                <Grid item key={key} xs={12} sm={6} md={4}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5" component="div">
-                        {capitalizeFirstLetter(replaceUnderscoreWithSpace(fruit.name || ""))}
-                      </Typography>
-                      <Typography variant="body2" className="black-text">
-                        Price: ${parseFloat(fruit.current_price).toFixed(2)}
-                      </Typography>
+            if (fruit && fruit.current_price != null) { // Check if fruit and current_price are not null
+              const currentPrice = currentPrices[key] != null ? currentPrices[key] : fruit.current_price;
+              if (!isNaN(parseFloat(currentPrice))) {
+                return (
+                  <Grid item key={key} xs={12} sm={6} md={4}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h5" component="div">
+                          {capitalizeFirstLetter(replaceUnderscoreWithSpace(fruit.name || ""))}
+                        </Typography>
+                        <Typography variant="body2" className="black-text">
+                          Price: ${parseFloat(currentPrice).toFixed(2)}
+                        </Typography>
                       {/* <TextField
                         size="small"
                         label="Quantity"
@@ -107,26 +104,27 @@ const Market = () => {
                           style: { color: "black" },
                         }}
                       /> */}
-                    </CardContent>
-                    <CardActions>
-                      <BuyButton fruit={fruit} quantity={quantities[key] || 1} />
-                    </CardActions>
-                  </Card>
-                </Grid>
+                     </CardContent>
+                      <CardActions>
+                        <BuyButton fruit={fruit} quantity={quantities[key] || 1} />
+                      </CardActions>
+                    </Card>
+                  </Grid>
                 );
               }
-              return null;
-            })}
-         </Grid>
-        ) : (
-          <Typography>No fruits available</Typography>
-        )}
-        <UserInventoryPage currentUser={user} />
-        {/* <UserChart/> */}
-        <LogOutButton className="btn" />
-        </Container>
-    );
-  };
+            }
+            return null;
+          })}
+        </Grid>
+      ) : (
+        <Typography>No fruits available</Typography>
+      )}
+      <UserInventoryPage currentUser={user} />
+      <LogOutButton className="btn" />
+    </Container>
+      );
+    };
+    
       {/* <Inventory inventory={inventory}  */}
 
       {/* <ToggleButton

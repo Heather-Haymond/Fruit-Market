@@ -33,40 +33,46 @@ const useUserInventory = () => {
         } else {
           throw new Error("Unexpected data format");
         }
-        console.log("User inventory before combining:", userInventory);
-
-        // Check if currentPrices is an array
-        const pricesArray = Array.isArray(currentPrices)
-          ? currentPrices
-          : Object.keys(currentPrices).map((fruit_id) => ({
-              fruit_id,
-              price: currentPrices[fruit_id],
-            }));
-
-        console.log("Prices array:", pricesArray);
-
-        // Combine inventory with current prices
-        const inventoryWithPrices = userInventory.map((item) => ({
-          ...item,
-          current_price:
-            pricesArray.find((price) => price.fruit_id === item.fruit_id)
-              ?.price || null,
-        }));
-
-        console.log("Inventory with current prices:", inventoryWithPrices);
-        setInventory(inventoryWithPrices);
+        setInventory(userInventory);
       } catch (err) {
-        console.error("Error fetching inventory:", err);
         setError(err.message);
       }
     };
+        // console.log("User inventory before combining:", userInventory);
+
+        // Ensure currentPrices is an object with fruit_id as keys
+        //const pricesArray = Object.entries(currentPrices).map(([fruit_id, price]) => ({
+        //   fruit_id: parseInt(fruit_id, 10), 
+        //   price,
+        // }));
+
+        // console.log("Prices array:", pricesArray);
+
+        // Combine inventory with current prices
+        // const inventoryWithPrices = userInventory.map((item) => {
+        //   const priceObj = pricesArray.find((price) => price.fruit_id === item.fruit_id);
+        //   console.log("Item:", item);
+        //   console.log("Found price:", priceObj);
+        //   return {
+        //     ...item,
+        //     current_price: priceObj ? priceObj.price : null,
+        //   };
+        // });
+
+    //     console.log("Inventory with current prices:", inventoryWithPrices);
+    //     setInventory(inventoryWithPrices);
+    //   } catch (err) {
+    //     console.error("Error fetching inventory:", err);
+    //     setError(err.message);
+    //   }
+    // };
 
     if (userId) {
       fetchInventory();
     } else {
       console.log("User ID is not available");
     }
-  }, [userId, currentPrices]);
+  }, [userId]);
 
   return { inventory, error };
 };

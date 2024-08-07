@@ -4,6 +4,7 @@ import useUserInventory from "../../hooks/useUserInventory";
 import useCurrentPrices from "../../hooks/useCurrentPrices";
 import { groupByFruitId } from "../../utils/aggregateData";
 import InventoryItem from "./InventoryItem";
+
 import {
   Container,
   Typography,
@@ -21,15 +22,22 @@ const UserInventory = () => {
   const currentUser = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_CURRENT_PRICES_REQUEST' });
+    console.log("Dispatching FETCH_CURRENT_PRICES from UserInventory");
+    dispatch({ type: 'FETCH_CURRENT_PRICES' });
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log("Current Prices:", currentPrices);
+    console.log("User Inventory:", inventory);
+  }, [currentPrices, inventory]);
 
   if (error) return <div>Error: {error}</div>;
   if (pricesError) return <div>Error loading prices: {pricesError}</div>;
   if (!inventory ) return <div>Loading...</div>;
 
   const groupedInventory = groupByFruitId(inventory);
-
+  console.log("Current Prices:", currentPrices);
+  console.log("Grouped Inventory:", groupedInventory);
   return (
     <Container>
       <Typography variant="h3" gutterBottom>
