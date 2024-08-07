@@ -90,13 +90,10 @@ function* sellSaga(action) {
     const stateAfter = yield select();
     console.log("State after selling fruit:", stateAfter);
     console.log("Sell fruit response:", response.data);
-    if (response.data && response.data.newTotalCash) {
+    if (response.data && response.data.newTotalCash !== undefined) {
       const newTotalCash = parseFloat(response.data.newTotalCash.replace('$', ''));
+      console.log("Updating total cash in sellSaga:", newTotalCash);
     yield put({ type: "UPDATE_USER", payload: { total_cash: newTotalCash } });
-  // } else {
-  //   console.error("User data not found in response:", response.data);
-  //   throw new Error("User data not found in response");
-  // }
     yield put({ type: "SELL_FRUIT_SUCCESS",
      payload: response.data, total_cash: newTotalCash });
     } else {
@@ -129,6 +126,7 @@ function* buySaga(action) {
     console.log("New total cash:", formatCash(parseFloat(newTotalCash)));
     console.log("Updated inventory:", updatedInventory);
     console.log("Buy fruit response:", response.data);
+    console.log("Updating total cash in buySaga:", newTotalCash);
     yield put({ type: "UPDATE_USER", payload: response.data.user });
     yield put({ type: "BUY_FRUIT_SUCCESS", payload: response.data });
   } catch (error) {

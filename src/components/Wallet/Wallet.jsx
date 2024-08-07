@@ -10,8 +10,8 @@ const selectTotalCash = createSelector(
   (total_cash) => (total_cash ? parseFloat(total_cash).toFixed(2) : "0.00")
 );
 const Wallet = () => {
-  const totalCash = useSelector(state => state.user.total_cash);
-
+  const totalCash = useSelector(selectTotalCash);
+  console.log("Rendering Wallet - Total Cash:", totalCash);çç
   return (
     <Paper elevation={3}>
       <Box sx={{ padding: 3 }}>
