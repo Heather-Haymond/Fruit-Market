@@ -10,7 +10,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.payload,
-        total_cash: action.payload.total_cash || state.total_cash,
+        total_cash: parseFloat(action.payload.total_cash || state.total_cash).toFixed(2),
       };
     case "UNSET_USER":
       return {};
@@ -25,24 +25,24 @@ const userReducer = (state = initialState, action) => {
         ...action.payload,
         total_cash:
           action.payload.total_cash !== undefined
-          ? parseFloat(action.payload.total_cash).toFixed(2)
+            ? parseFloat(action.payload.total_cash).toFixed(2)
             : state.total_cash,
       };
     case "BUY_FRUIT_SUCCESS":
+      if (action.payload.newTotalCash !== undefined) {
       return {
         ...state,
-        total_cash: (
-          parseFloat(state.total_cash) -
-          parseFloat(action.payload.purchasePrice)
-        ).toFixed(2),
+        total_cash: parseFloat(action.payload.newTotalCash).toFixed(2),
         error: null,
       };
+    }
+    console.error("BUY_FRUIT_SUCCESS action received without newTotalCash");
+    return state;
     case "SELL_FRUIT_SUCCESS":
       return {
         ...state,
         total_cash: (
-          parseFloat(state.total_cash) + parseFloat(action.payload.sellPrice)
-        ).toFixed(2),
+          parseFloat(state.total_cash) + parseFloat(action.payload.sellPrice)).toFixed(2),
         error: null,
       };
     default:

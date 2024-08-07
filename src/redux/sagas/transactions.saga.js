@@ -110,9 +110,14 @@ function* buySaga(action) {
   try {
     const { fruitId, quantity, purchasePrice, userId } = action.payload;
     console.log("Buy fruit payload:", action.payload);
-    const parsedPurchasePrice = parseFloat(purchasePrice);
+
+    const parsedPurchasePrice = parseFloat(purchasePrice).toFixed(2);
     if (isNaN(parsedPurchasePrice)) {
       throw new Error("Amount must be a number");
+    }
+     // Validate purchasePrice before sending to the server
+     if (purchasePrice < 0.50) {
+      throw new Error('Invalid purchase price');
     }
 
     const response = yield call(axios.post, "/api/transactions/buy", {
@@ -121,14 +126,29 @@ function* buySaga(action) {
       quantity,
       purchase_price: purchasePrice,
     });
+
     const { newTotalCash, updatedInventory } = response.data;
+    const parsedNewTotalCash = parseFloat(newTotalCash.replace('$', ''));
+
     const formattedTotalCash = formatCash(parseFloat(newTotalCash));
     console.log("New total cash:", formatCash(parseFloat(newTotalCash)));
     console.log("Updated inventory:", updatedInventory);
     console.log("Buy fruit response:", response.data);
     console.log("Updating total cash in buySaga:", newTotalCash);
-    yield put({ type: "UPDATE_USER", payload: response.data.user });
-    yield put({ type: "BUY_FRUIT_SUCCESS", payload: response.data });
+
+    yield put({ 
+      type: "UPDATE_USER",
+       payload: { 
+        ...response.data.updatedUser, 
+        total_cash: parsedNewTotalCash 
+      }  });
+    yield put({ 
+      type: "BUY_FRUIT_SUCCESS",
+      payload:  { 
+        ...response.data, 
+        newTotalCash: parsedNewTotalCash 
+      } 
+     });
   } catch (error) {
     console.error("Buy fruit error:", error.response?.data || error.message);
     yield put({ type: "BUY_FRUIT_FAILURE", payload: error.message });

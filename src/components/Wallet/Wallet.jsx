@@ -11,7 +11,7 @@ const selectTotalCash = createSelector(
 );
 const Wallet = () => {
   const totalCash = useSelector(selectTotalCash);
-  console.log("Rendering Wallet - Total Cash:", totalCash);çç
+  console.log("Rendering Wallet - Total Cash:", totalCash);
   return (
     <Paper elevation={3}>
       <Box sx={{ padding: 3 }}>

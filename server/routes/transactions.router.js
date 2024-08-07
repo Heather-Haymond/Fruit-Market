@@ -12,7 +12,7 @@ router.post("/buy", async (req, res) => {
     !quantity ||
     !purchase_price ||
     quantity < 1 ||
-    purchase_price < 0.5
+    purchase_price < 0.50
   ) {
     return res
       .status(400)
@@ -111,7 +111,7 @@ router.post("/buy", async (req, res) => {
 // Helper function to validate and parse purchase price
 const validatePurchasePrice = (purchase_price) => {
   const numericPurchasePrice = parseFloat(purchase_price);
-  if (isNaN(numericPurchasePrice) || numericPurchasePrice <= 0.5) {
+  if (isNaN(numericPurchasePrice) || numericPurchasePrice <= 0.50) {
     throw new Error("Invalid purchase price");
   }
   return numericPurchasePrice.toFixed(2);
@@ -120,7 +120,7 @@ const validatePurchasePrice = (purchase_price) => {
 // Helper function to validate and parse purchase price
 const validateCurrentPrice = (current_price) => {
   const numericCurrentPrice = parseFloat(current_price);
-  if (isNaN(numericCurrentPrice) || numericCurrentPrice <= 0.5) {
+  if (isNaN(numericCurrentPrice) || numericCurrentPrice <= 0.50) {
     throw new Error("Invalid current price");
   }
   return numericCurrentPrice.toFixed(2);

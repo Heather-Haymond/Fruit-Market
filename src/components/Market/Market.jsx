@@ -43,8 +43,8 @@ const Market = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("Current Prices in Market:", currentPrices);
-    console.log("Fruits in Market:", fruits);
+    // console.log("Current Prices in Market:", currentPrices);
+    // console.log("Fruits in Market:", fruits);
   }, [currentPrices, fruits]);
   // const handlePricesUpdate = (updatedPrices) => {
   //   dispatch({
@@ -65,7 +65,7 @@ const Market = () => {
   //   }));
   // };
 
-  console.log("Fruits:", fruits);
+  // console.log("Fruits:", fruits);
   console.log("Current Prices:", currentPrices);
 
   return (
