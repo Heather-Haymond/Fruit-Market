@@ -10,10 +10,10 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
     inventory_id,
     current_price,
     quantity: initialQuantity = 1,
+    potential_profit_loss,
   } = fruit || {};
 
   const [quantity, setQuantity] = useState(initialQuantity);
-
 
   // console.log("User ID:", user.id);
   // console.log("Received fruit data:", fruit);
@@ -43,30 +43,36 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
   //   }
   // };
 
-
   const isOwner = userId === currentUserId;
   return (
     <div className="inventory-item">
       <span>{fruit.name}</span>
-      <span>  Price Purchased: ${purchase_price.toFixed(2)}</span>
-      {/* <input
+      <span> Price Purchased: ${purchase_price.toFixed(2)}</span>
+      {/* <span> Potential Profit/Loss: ${potential_profit_loss}</span> /}
+      {/ <input
         type="number"
         value={quantity}
         onChange={handleQuantityChange}
         min="1"
         placeholder="Quantity"
-      /> */}
-      Selling Price: ${fruit.current_price ? Number(fruit.current_price).toFixed(2) : 'N/A'}
+      /> /}
+      {/ Selling Price: ${fruit.current_price ? Number(fruit.current_price).toFixed(2) : 'N/A'} /}
+      {/ Potential Profit/Loss: ${item.potential_profit_loss}  */}
       {isOwner && (
-        <SellButton
-          fruit_id={fruitId}
-          purchase_price={Number(purchase_price)}
-          current_price={Number(current_price)}
-          user_id={userId}
-          inventory_id={inventory_id}
-          quantity={quantity}
-          text="Sell"
-        />
+        <>
+          <SellButton
+            fruit_id={fruitId}
+            purchase_price={Number(purchase_price)}
+            current_price={Number(current_price)}
+            user_id={userId}
+            inventory_id={inventory_id}
+            quantity={quantity}
+            text="Sell"
+          />
+          <span style={{ fontSize: "0.875rem", color: "#666" }}>
+            Potential Profit/Loss: ${potential_profit_loss}
+          </span>
+        </>
       )}
     </div>
   );
