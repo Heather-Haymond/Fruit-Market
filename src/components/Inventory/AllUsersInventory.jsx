@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from 'react-redux';
-import { Box, Typography, Paper, Divider } from '@mui/material';
+import { Box, Typography, Paper, Divider, Card, CardContent, CardHeader,} from '@mui/material';
 import useFetchAllInventories from '../../hooks/useFetchAllInventories';
 import useCurrentPrices from '../../hooks/useCurrentPrices'; 
 import { groupByFruitId } from "../../utils/aggregateData"; 
 import InventoryItem from './InventoryItem';
+import useGainsOrLoss from '../../hooks/useGainsOrLoss';
 
 const AllUsersInventory = ({ currentUser }) => {
   const [inventory, setInventory] = useState([]);
   const dispatch = useDispatch();
   const { inventories, error: inventoriesError } = useFetchAllInventories();
   const { currentPrices, error: pricesError, loading: pricesLoading } = useCurrentPrices();
+  const gainsOrLoss = useGainsOrLoss(inventories, currentPrices);
 
   useEffect(() => {
     dispatch({ type: 'FETCH_CURRENT_PRICES' });

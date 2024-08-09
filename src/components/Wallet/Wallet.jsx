@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Box, Typography, Paper } from "@mui/material";
 import AverageTotal from "./AverageTotal";
 import { createSelector } from "reselect";
+import walletImage from "../../images/walletImage.png";
 
 // Memoized selector for total cash
 const selectTotalCash = createSelector(
@@ -13,8 +14,16 @@ const Wallet = () => {
   const totalCash = useSelector(selectTotalCash);
   console.log("Rendering Wallet - Total Cash:", totalCash);
   return (
-    <Paper elevation={3}>
-      <Box sx={{ padding: 3 }}>
+    <Box
+      sx={{
+        backgroundImage: `url(${walletImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh", 
+        padding: 2,
+      }}
+    >
+      <Paper elevation={3} sx={{ maxWidth: 600, margin: "0 auto", padding: 2, backgroundColor:  '#b3e5fc', }}>
         <Typography variant="h4" gutterBottom>
           Wallet
         </Typography>
@@ -22,8 +31,8 @@ const Wallet = () => {
           <Typography variant="h6">Total Cash: ${totalCash}</Typography>
         </Paper>
         <AverageTotal />
-      </Box>
-    </Paper>
+      </Paper>
+    </Box>
   );
 };
 

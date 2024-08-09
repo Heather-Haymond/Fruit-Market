@@ -1,5 +1,6 @@
 export const groupByFruitId = (inventory) => {
   if (!Array.isArray(inventory)) {
+    console.error("Expected an array for inventory, but received:", inventory);
     return [];
       }
 
@@ -8,12 +9,12 @@ export const groupByFruitId = (inventory) => {
     const { inventory_id, fruit_id, fruit_name, purchase_price, current_price, quantity } = fruitItem;
     // console.log("Processing fruitItem:", fruitItem);
     // console.log("Type of fruit_id:", typeof fruit_id);
-    // console.log("Value of fruit_id:", fruit_id);
+    console.log("Value of fruit_id:", fruit_id);
     // console.log("Type of fruit_name:", typeof fruit_name);
     // console.log("Value of fruit_name:", fruit_name);
 
     if (fruit_id === undefined || fruit_id === null) {
-      console.error("Invalid fruit_id:", fruit_id);
+      console.error(`Item at index ${index} has an invalid fruit_id:`, fruitItem);
       return;
     }
     if (!grouped[fruit_id]) {

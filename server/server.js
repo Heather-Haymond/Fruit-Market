@@ -13,6 +13,11 @@ const fruitRouter = require('./routes/fruit.router');
 const inventoryRouter = require('./routes/inventory.router');
 const transactionsRouter = require('./routes/transactions.router');
 
+console.log('Starting periodic price updates');
+
+// Price Updates
+const updatePricesPeriodically = require('../src/services/priceUpdater');
+updatePricesPeriodically(); 
 
 // Express Middleware
 app.use(express.json());
