@@ -13,12 +13,10 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
     potential_profit_loss,
   } = fruit || {};
 
-  const [quantity, setQuantity] = useState(initialQuantity);
 
   // console.log("User ID:", user.id);
   // console.log("Received fruit data:", fruit);
   // console.log("Received user data:", user);
-
   if (!userId) {
     console.error("User is not defined or user.id is missing in InventoryItem");
     return <div>Error: User is not defined</div>;
@@ -36,6 +34,17 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
     return <div>Error: Current user is not defined</div>;
   }
 
+  const [quantity, setQuantity] = useState(initialQuantity);
+  const isOwner = userId === currentUserId;
+
+  // Calculate profit/loss for a single item
+  const profitLoss = current_price - purchase_price;
+  const formattedProfitLoss = profitLoss.toFixed(2);
+
+   // Calculate percentage
+  const profitLossPercentage = Math.round(((current_price - purchase_price) / purchase_price * 100));
+
+
   // const handleQuantityChange = (e) => {
   //   const newQuantity = Number(e.target.value);
   //   if (newQuantity >= 1) {
@@ -43,9 +52,7 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
   //   }
   // };
 
-  const isOwner = userId === currentUserId;
-
-  const formattedProfitLoss = Number(potential_profit_loss) || 0;
+  
   return (
     <div className="inventory-item">
       <span>{fruit.name}</span>
@@ -86,11 +93,11 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
                 color: "gold",
                 textShadow: "1px 1px 0 #333, -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333"
               }}
-            >
-              Profit
+            > 
+           Gains
             </span>
             )}
-            : ${potential_profit_loss}
+            ${Math.abs(formattedProfitLoss)} ({profitLossPercentage}%)
           </div>
         </>
       )}
