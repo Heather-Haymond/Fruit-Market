@@ -44,6 +44,8 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
   // };
 
   const isOwner = userId === currentUserId;
+
+  const formattedProfitLoss = Number(potential_profit_loss) || 0;
   return (
     <div className="inventory-item">
       <span>{fruit.name}</span>
@@ -69,9 +71,27 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
             quantity={quantity}
             text="Sell"
           />
-          <span style={{ fontSize: "0.875rem", color: "#666" }}>
-            Potential Profit/Loss: ${potential_profit_loss}
-          </span>
+           <div style={{ fontSize: "0.975rem", color: "#222",  }}>
+            Potential{" "}
+            {formattedProfitLoss < 0 ? (
+              <span style={{ 
+                color: "red",
+                fontWeight: "bold",
+                textShadow: "1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000"
+               }}>Loss</span>
+            ) : (
+              <span
+              style={{
+                fontWeight: "bold",
+                color: "gold",
+                textShadow: "1px 1px 0 #333, -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333"
+              }}
+            >
+              Profit
+            </span>
+            )}
+            : ${potential_profit_loss}
+          </div>
         </>
       )}
     </div>

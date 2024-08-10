@@ -126,7 +126,7 @@ const Market = () => {
                           Price: ${parseFloat(currentPrice).toFixed(2)}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          ID: {fruit.id}
+                          {/* ID: {fruit.id} */}
                         </Typography>
                         {/* <TextField
                         size="small"

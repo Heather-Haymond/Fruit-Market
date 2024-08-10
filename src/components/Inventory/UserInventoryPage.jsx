@@ -14,8 +14,24 @@ import {
   CardContent,
   List,
   ListItem,
+  Box,
 
 } from "@mui/material";
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+const capitalizeWords = (string) => {
+  return string
+    .split(' ')
+    .map(word => capitalizeFirstLetter(word))
+    .join(' ');
+};
+
+const replaceUnderscoreWithSpace = (string) => {
+  return string.replace(/_/g, " ");
+};
 
 const UserInventory = () => {
   const dispatch = useDispatch();
@@ -40,14 +56,41 @@ const UserInventory = () => {
   // console.log("Grouped Inventory:", groupedInventory);
   return (
     <Container>
-      <Typography variant="h3" gutterBottom>
+       <Typography
+        variant="h3"
+        gutterBottom
+        sx={{
+          color: 'white',
+          textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black'
+        }}
+      >
         Your Inventory
       </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center', 
+          gap: 4, 
+        }}
+      >
       {gainsOrLossData.map((group) => (
-        <Card key={group.fruit_id} variant="outlined" sx={{ mb: 2 }}>
+        <Card
+        key={group.fruit_id}
+        variant="outlined"
+        sx={{
+          mb: 2, 
+          backgroundColor: 'green', 
+          borderColor: 'secondary.main',
+          color: 'white', 
+          padding: 2, 
+          width: '40%', 
+
+        }}
+      >
           <CardContent>
             <Typography variant="h4" component="div" gutterBottom>
-              {group.fruit_name}
+            {replaceUnderscoreWithSpace(capitalizeWords(group.fruit_name))}
             </Typography>
             <Typography>Current Selling Price: ${group.current_market_price}</Typography>
             <List>
@@ -56,7 +99,7 @@ const UserInventory = () => {
                   <InventoryItem
                     fruit={{
                       id: group.fruit_id,
-                      name: group.fruit_name,
+                      name: replaceUnderscoreWithSpace(capitalizeWords(group.fruit_name)),
                       purchase_price: item.purchase_price,
                       current_price: group.current_market_price,
                       inventory_id: item.inventory_id,
@@ -75,6 +118,7 @@ const UserInventory = () => {
           </CardContent>
         </Card>
       ))}
+      </Box>
     </Container>
   );
 };
