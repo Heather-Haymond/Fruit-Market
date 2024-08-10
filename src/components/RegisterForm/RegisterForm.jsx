@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, TextField, Typography, Box } from "@mui/material";
 
+
 function RegisterForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +22,7 @@ function RegisterForm() {
   }; // end registerUser
 
   return (
+    
     <Box
       component="form"
       onSubmit={registerUser}
@@ -33,13 +35,12 @@ function RegisterForm() {
           borderRadius: 1,
           padding: .5,
           textAlign: "center", 
-          mb: 2,
+          mb: .5,
           height: '20px', 
           maxWidth: '250px',
           display: 'flex',
           alignItems: 'center', 
           justifyContent: 'center', 
-          margin: '0 auto',
         
         }}
       >
@@ -60,7 +61,7 @@ function RegisterForm() {
           {errors.registrationMessage}
         </Typography>
       )}
-      <Box mb={2}>
+      <Box mb={1}>
         <TextField
           fullWidth
           label="Username"
@@ -88,7 +89,7 @@ function RegisterForm() {
           }}
         />
       </Box>
-      <Box mb={2}>
+      <Box mb={1}>
         <TextField
           fullWidth
           label="Password"
@@ -127,7 +128,10 @@ function RegisterForm() {
             backgroundColor: "#f4d03f",
             color: "#000",
           },
-          mb: 1,
+        
+          mb: 2,
+          py: 0.5,
+          maxWidth: '160px', 
         }}
         fullWidth
       >

@@ -19,7 +19,23 @@ const AverageTotal = () => {
 
   return (
     <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
+       <Box
+        sx={{
+          backgroundColor:  '#009688',
+          padding: 2,
+          borderRadius: 1, // rounded corners
+          display: 'inline-block',
+          minWidth: '500px', 
+        }}
+      >
+     <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          color: 'white',
+          textShadow: '2px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black'
+        }}
+      >
         Average Total Summary
       </Typography>
       {groupedInventory.length > 0 ? (
@@ -66,6 +82,7 @@ const AverageTotal = () => {
       ) : (
         <Typography>No inventory data available</Typography>
       )}
+    </Box>
     </Box>
   );
 };

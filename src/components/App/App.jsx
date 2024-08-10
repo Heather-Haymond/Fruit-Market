@@ -7,6 +7,9 @@ import {
 } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from "../../styles/theme";
+
 
 import Nav from '../Nav/Nav';
 import Footer from '../Footer/Footer';
@@ -26,16 +29,9 @@ import AverageTotal from '../Wallet/AverageTotal';
 import AllUsersInventory from '../Inventory/AllUsersInventory';
 import Chart from '../Charts/Chart';
 
-import './App.css';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import "../../styles/global.css";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#4caf50', // Green color
-    },
-  },
-});
+
 function App() {
   const dispatch = useDispatch();
 

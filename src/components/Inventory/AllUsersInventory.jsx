@@ -8,6 +8,9 @@ import { groupByFruitId } from "../../utils/aggregateData";
 import InventoryItem from './InventoryItem';
 import useGainsOrLoss from '../../hooks/useGainsOrLoss';
 
+import allImage from '../../images/allInventory.png';
+import paperBackgroundImage from '../../images/allCards.png';
+
 const AllUsersInventory = ({ currentUser }) => {
   const [inventory, setInventory] = useState([]);
   const dispatch = useDispatch();
@@ -44,39 +47,88 @@ const AllUsersInventory = ({ currentUser }) => {
   }, {});
 
   return (
-    <Box sx={{ padding: 2 }}>
-    <Typography variant="h3" gutterBottom>All Users' Inventories</Typography>
+    <Box
+    sx={{
+      padding: 2,
+      backgroundImage: `url(${allImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      minHeight: '100vh' 
+    }}
+  >
+     <Typography
+        variant="h3"
+        gutterBottom
+        sx={{
+          color: 'white',
+          textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black'
+        }}
+      >All Users' Inventories</Typography>
+    <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap', 
+          gap: 2, 
+        }}
+      >
       {Object.values(groupedByUser).map((user) => {
          console.log("Rendering user:", user);
         const groupedInventory = groupByFruitId(user.inventory);
         return (
-          <Paper key={`user-${user.id}`} sx={{ padding: 2, marginBottom: 2 }}>
+          <Paper 
+              key={`user-${user.id}`} 
+              sx={{ 
+                padding: 2, 
+                marginBottom: 2, 
+                maxWidth: 300,
+                flex: '1 1 300px',
+                backgroundImage: `url(${paperBackgroundImage})`, // Set the Paper background image
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                border: '6px solid #4CAF50', // Outline around the Paper
+                borderRadius: 2, 
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 9)',
+              }}
+            >
              <Typography variant="h4">User: {user.username}</Typography>
             <Divider sx={{ my: 2 }} />
             {Object.values(groupedInventory).length > 0 ? (
               Object.values(groupedInventory).map((group) => (
                 <Box key={`group-${group.id}`}sx={{ marginBottom: 2 }}>
-                  <Typography variant="h5">{group.name}</Typography>
-                  <Typography>Average Purchase Price: ${group.averagePurchasePrice}</Typography>
-                  {group.items.map((item, index) => {
-                    // Generate a unique key using a combination of identifiers
-                    const key = `item-${group.id}-${item.inventory_id || index}-${item.purchase_price}`;
-
-                    return (
-                      <InventoryItem 
-                      key={key} 
-                      fruit={{ 
-                        id: group.id,
-                        purchase_price: item.purchase_price,
-                        inventory_id: item.inventory_id,
-                        current_price: currentPrices[group.id],
-                      }}
-                      user={{ id: user.id }} 
-                      currentUser={currentUser}
-                    />
-                    
-                    );
-                  })}
+                  <Card 
+                  key={`group-${group.id}`}
+                  sx={{ 
+                    marginBottom: 2,
+                    maxWidth: 550, // Set the maximum width for Card
+                    mx: 'auto'    // Center the Card component
+                  }}
+                >
+                  <CardHeader
+                    title={group.name}
+                    subheader={`Average Purchase Price: $${group.averagePurchasePrice}`}
+                    sx={{ backgroundColor: '#4CAF50', color: 'white' }}
+                  />
+                  <CardContent>
+                    {group.items.map((item, index) => {
+                      const key = `item-${group.id}-${item.inventory_id || index}-${item.purchase_price}`;
+                      return (
+                        <InventoryItem 
+                          key={key} 
+                          fruit={{ 
+                            id: group.id,
+                            purchase_price: item.purchase_price,
+                            inventory_id: item.inventory_id,
+                            current_price: currentPrices[group.id],
+                          }}
+                          user={{ id: user.id }} 
+                          currentUser={currentUser}
+                        />
+                      );
+                    })}
+                  </CardContent>
+                </Card>
                  </Box>
               ))
             ) : (
@@ -85,6 +137,7 @@ const AllUsersInventory = ({ currentUser }) => {
           </Paper>
         );
       })}
+      </Box>
     </Box>
   );
 };

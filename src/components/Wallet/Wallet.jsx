@@ -20,16 +20,54 @@ const Wallet = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         minHeight: "100vh", 
-        padding: 2,
+        padding: 5,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+       
       }}
     >
-      <Paper elevation={3} sx={{ maxWidth: 600, margin: "0 auto", padding: 2, backgroundColor:  '#b3e5fc', }}>
-        <Typography variant="h4" gutterBottom>
-          Wallet
-        </Typography>
-        <Paper sx={{ padding: 2, marginBottom: 3 }}>
+      <Paper elevation={3} sx={{ 
+        maxWidth: 600,
+         margin: "0 auto",
+        padding: 2,
+        backgroundColor:  '#b3e5fc',
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center',
+        border: '6px solid #009688',
+        borderRadius: 2, // Optional: rounded corners for the Paper
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Optional: adjust shadow if needed
+      
+        }}>
+      <Box
+        sx={{
+          backgroundColor: '#009688', 
+          padding: 2,
+          borderRadius: 1, 
+          display: 'inline-block', 
+          minWidth: '500px', 
+          textAlign: 'center',
+        }}
+      >
+         <Typography
+        variant="h3"
+        gutterBottom
+        sx={{
+          color: 'white',
+          textShadow: '2px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black',
+          position: 'absolute',
+          top: 110, // Adjust the top spacing as needed
+          left: 40, // Adjust the left spacing as needed
+          zIndex: 1 // Ensure it's above other content
+        }}
+      >
+        Wallet
+      </Typography>
+        <Paper sx={{ padding: 2, marginBottom: 0 }}>
           <Typography variant="h6">Total Cash: ${totalCash}</Typography>
         </Paper>
+        </Box>
         <AverageTotal />
       </Paper>
     </Box>

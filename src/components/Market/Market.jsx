@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import styles from "./Market.module.css";
 import { useSelector, useDispatch } from "react-redux";
 import LogOutButton from "../LogOutButton/LogOutButton";
 import BuyButton from "../BuyButton/BuyButton";
@@ -69,14 +70,28 @@ const Market = () => {
   console.log("Current Prices:", currentPrices);
 
   return (
-    <Container>
-      <Typography variant="h2" gutterBottom>
+    <Container className={styles.containerBackground}>
+       <Typography
+        variant="h2"
+        gutterBottom
+        sx={{
+          color: 'white',
+          textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black'
+        }}
+      >
         Welcome, {user.username}!
       </Typography>
 
       {/* <p>Your ID is: {user.id}</p> */}
       {/* <Wallet /> */}
-      <Typography variant="h3" gutterBottom>
+      <Typography
+        variant="h3"
+        gutterBottom
+        sx={{
+          color: 'white',
+          textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black'
+        }}
+      >
         Fruit Market
       </Typography>
 
@@ -94,14 +109,20 @@ const Market = () => {
               if (!isNaN(parseFloat(currentPrice))) {
                 return (
                   <Grid item key={fruit.id} xs={12} sm={6} md={4}>
-                    <Card>
+                    <Card 
+                      sx={{
+                        backgroundColor: 'primary.main', // Uses primary color from the theme
+                        color: 'white', // Text color
+                        padding: 2, // Padding using spacing units from the theme
+                      }}
+                    >
                       <CardContent>
                         <Typography variant="h5" component="div">
                           {capitalizeFirstLetter(
                             replaceUnderscoreWithSpace(fruit.name || "")
                           )}
                         </Typography>
-                        <Typography variant="body2" className="black-text">
+                        <Typography variant="body2" className={styles.blackText}>
                           Price: ${parseFloat(currentPrice).toFixed(2)}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">

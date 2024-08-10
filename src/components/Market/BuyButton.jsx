@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import styles from "./BuyButton.module.css";
 
 const BuyButton = ({ fruit }) => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const BuyButton = ({ fruit }) => {
     });
   };
 
-  return <button onClick={handleBuyFruit}>Buy</button>;
+  return <button onClick={handleBuyFruit} className={styles.buyButton}>Buy</button>;
 };
 
 export default BuyButton;
