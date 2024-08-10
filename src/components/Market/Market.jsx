@@ -32,6 +32,7 @@ const Market = () => {
   const user = useSelector((state) => state.user);
   const fruits = useSelector((state) => state.fruit.fruits);
   const { currentPrices, loading, error } = useCurrentPrices();
+  const medianPrice = 5.25;
 
   const [quantities, setQuantities] = useState({});
 
@@ -59,6 +60,16 @@ const Market = () => {
   const hasFruits =
     fruits && typeof fruits === "object" && Object.keys(fruits).length > 0;
 
+  const getPriceComparisonLabel = (price) => {
+    if (price > medianPrice) {
+      return "...are OVER the median price!!";
+    } else if (price < medianPrice) {
+      return "...are UNDER the median price!!";
+    } else {
+      return "At the median price";
+    }
+  };
+
   // const handleQuantityChange = (fruitId, value) => {
   //   setQuantities(prevQuantities => ({
   //     ...prevQuantities,
@@ -71,12 +82,13 @@ const Market = () => {
 
   return (
     <Container className={styles.containerBackground}>
-       <Typography
+      <Typography
         variant="h2"
         gutterBottom
         sx={{
-          color: 'white',
-          textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black'
+          color: "white",
+          textShadow:
+            "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
         }}
       >
         Welcome, {user.username}!
@@ -88,8 +100,9 @@ const Market = () => {
         variant="h3"
         gutterBottom
         sx={{
-          color: 'white',
-          textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black'
+          color: "white",
+          textShadow:
+            "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
         }}
       >
         Fruit Market
@@ -106,14 +119,18 @@ const Market = () => {
                 currentPrices[fruit.id] != null
                   ? currentPrices[fruit.id]
                   : fruit.current_price;
-              if (!isNaN(parseFloat(currentPrice))) {
+              if (currentPrice && !isNaN(parseFloat(currentPrice))) {
+                const priceComparisonLabel = getPriceComparisonLabel(
+                  parseFloat(currentPrice)
+                );
                 return (
-                  <Grid item key={fruit.id} xs={12} sm={6} md={4}>
-                    <Card 
+                  <Grid item key={fruit.id} xs={12} sm={6} md={4} lg={3}>
+                    <Card
                       sx={{
-                        backgroundColor: 'primary.main', // Uses primary color from the theme
-                        color: 'white', // Text color
-                        padding: 2, // Padding using spacing units from the theme
+                        backgroundColor: "primary.main",
+                        color: "white",
+                        padding: 2,
+                        width: "240px",
                       }}
                     >
                       <CardContent>
@@ -122,12 +139,17 @@ const Market = () => {
                             replaceUnderscoreWithSpace(fruit.name || "")
                           )}
                         </Typography>
-                        <Typography variant="body2" className={styles.blackText}>
-                          Price: ${parseFloat(currentPrice).toFixed(2)}
-                        </Typography>
                         <Typography variant="body2" color="textSecondary">
+                          {priceComparisonLabel}
                           {/* ID: {fruit.id} */}
                         </Typography>
+                        <Typography
+                          variant="body4"
+                          className={styles.blackText}
+                        >
+                          Current Price: ${parseFloat(currentPrice).toFixed(2)}
+                        </Typography>
+
                         {/* <TextField
                         size="small"
                         label="Quantity"
@@ -147,7 +169,7 @@ const Market = () => {
                       /> */}
                       </CardContent>
                       <CardActions>
-                        <BuyButton
+                      <BuyButton
                           fruit={fruit}
                           quantity={quantities[fruit.id] || 1}
                         />

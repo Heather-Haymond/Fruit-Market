@@ -38,6 +38,7 @@ const UserInventory = () => {
   const { inventory, error } = useUserInventory();
   const { currentPrices, loading: pricesLoading, error: pricesError } = useCurrentPrices();
   const currentUser = useSelector((state) => state.user);
+  const totalCash = currentUser.total_cash;
 
   useEffect(() => {
     dispatch({ type: 'FETCH_CURRENT_PRICES' });
@@ -56,16 +57,36 @@ const UserInventory = () => {
   // console.log("Grouped Inventory:", groupedInventory);
   return (
     <Container>
-       <Typography
-        variant="h3"
-        gutterBottom
+      {/* Display the "Your Inventory" title and "Total Cash" next to each other */}
+      <Box
         sx={{
-          color: 'white',
-          textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black'
+          display: 'flex',
+          justifyContent: 'flex-start', // Pushes the items to opposite ends
+          alignItems: 'center', // Vertically center the items
+          marginBottom: 2, // Adds some spacing below
         }}
       >
-        Your Inventory
-      </Typography>
+        <Typography
+          variant="h3"
+          gutterBottom
+          sx={{
+            color: 'white',
+            textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black',
+          }}
+        >
+          Your Inventory... 
+        </Typography>
+
+        <Typography
+          variant="h4"
+          sx={{
+            color: 'white',
+            textShadow: '1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black',
+          }}
+        >
+            and Cash Money: ${parseFloat(totalCash).toFixed(2)}
+        </Typography>
+      </Box>
       <Box
         sx={{
           display: 'flex',
