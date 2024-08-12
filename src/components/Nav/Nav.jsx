@@ -45,6 +45,9 @@ function Nav() {
               <Button color="inherit" component={RouterLink} to="/chart">
                 Graphs
               </Button>
+              <Button color="inherit" component={RouterLink} to="/faq">
+                FAQ
+              </Button>
               <LogOutButton />
             </>
           )}

@@ -28,6 +28,8 @@ import Wallet from '../Wallet/Wallet';
 import AverageTotal from '../Wallet/AverageTotal';
 import AllUsersInventory from '../Inventory/AllUsersInventory';
 import Chart from '../Charts/Chart';
+import FAQ from '../FAQ/FAQ';
+
 
 import "../../styles/global.css";
 
@@ -98,6 +100,9 @@ function App() {
           >
             <AllUsersInventory currentUser={user} />
           </ProtectedRoute>
+          <Route exact path="/FAQ">
+              <FAQ /> 
+            </Route>
 
           <Route
             exact
