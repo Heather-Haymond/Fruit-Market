@@ -1,4 +1,8 @@
 export const calculateGainsOrLoss = (groupedInventory, currentMarketPrices) => {
+  if (!Array.isArray(groupedInventory)) {
+    console.error('Invalid data type for groupedInventory:', groupedInventory);
+    return [];
+}
     return groupedInventory.map(fruitGroup => {
       const { id, name, items, averagePurchasePrice } = fruitGroup;
       const currentMarketPrice = currentMarketPrices[id] || 0;

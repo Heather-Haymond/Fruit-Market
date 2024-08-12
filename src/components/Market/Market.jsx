@@ -62,14 +62,23 @@ const Market = () => {
 
   const getPriceComparisonLabel = (price) => {
     if (price > medianPrice) {
-      return "...are OVER the median price!!";
+      return(
+        <>
+          ...are <span style={{ color: "#8B0000" }}>OVER</span> the median price!!
+        </>
+      );
     } else if (price < medianPrice) {
-      return "...are UNDER the median price!!";
+      return (
+        <>
+          ...are <span style={{ color: "gold" }}>UNDER</span> the median price!!
+        </>
+      );
     } else {
-      return "At the median price";
+      return "...are At the median price";
     }
   };
 
+ 
   // const handleQuantityChange = (fruitId, value) => {
   //   setQuantities(prevQuantities => ({
   //     ...prevQuantities,
@@ -88,7 +97,7 @@ const Market = () => {
         sx={{
           color: "white",
           textShadow:
-            "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
+          "2px 2px 0 black, -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black, 2px 0px 0 black, 0px 2px 0 black, -2px 0px 0 black, 0px -2px 0 black",
         }}
       >
         Welcome, {user.username}!
@@ -102,7 +111,7 @@ const Market = () => {
         sx={{
           color: "white",
           textShadow:
-            "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
+          "2px 2px 0 black, -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black, 2px 0px 0 black, 0px 2px 0 black, -2px 0px 0 black, 0px -2px 0 black",
         }}
       >
         Fruit Market
@@ -131,6 +140,8 @@ const Market = () => {
                         color: "white",
                         padding: 2,
                         width: "240px",
+                        
+                        
                       }}
                     >
                       <CardContent>

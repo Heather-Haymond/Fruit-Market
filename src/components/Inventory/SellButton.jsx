@@ -8,7 +8,7 @@ const SellButton = ({fruit_id, user_id, inventory_id, quantity,  current_price})
   const handleSell = () => {
     // Convert current_price to a number
     console.log('Type of current_price:', typeof current_price); // expected: 'number'
-    console.log('Current Price (raw):', current_price); //expected: Raw value
+    console.log('Current Price (raw):', current_price); 4//expected: Raw value
     const numericPrice = parseFloat(current_price);
     console.log('Type of numericPrice:', typeof numericPrice); // expected: 'number'
     console.log('Current Price (numeric):', numericPrice); // expected: Numeric conversion

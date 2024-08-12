@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import {
   Box,
@@ -81,7 +80,8 @@ const AllUsersInventory = ({ currentUser }) => {
         sx={{
           color: "white",
           textShadow:
-            "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
+          "2px 2px 0 black, -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black, 2px 0px 0 black, 0px 2px 0 black, -2px 0px 0 black, 0px -2px 0 black",
+
         }}
       >
         All Users' Inventories
@@ -90,12 +90,14 @@ const AllUsersInventory = ({ currentUser }) => {
         sx={{
           display: "flex",
           flexWrap: "wrap",
+          justifyContent: 'space-between',
           gap: 2,
         }}
       >
         {Object.values(groupedByUser).map((user) => {
           console.log("Rendering user:", user);
           const groupedInventory = groupByFruitId(user.inventory);
+           
           return (
             <Paper
               key={`user-${user.id}`}
@@ -104,7 +106,7 @@ const AllUsersInventory = ({ currentUser }) => {
                 marginBottom: 2,
                 maxWidth: 300,
                 flex: "1 1 300px",
-                backgroundImage: `url(${paperBackgroundImage})`, // Set the Paper background image
+                backgroundImage: `url(${paperBackgroundImage})`, 
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",

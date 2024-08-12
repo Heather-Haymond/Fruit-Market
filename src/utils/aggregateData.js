@@ -53,6 +53,26 @@ export const groupByFruitId = (inventory) => {
     group.averagePurchasePrice = "0.00";
   }
   });
-// console.log(" grouping:", typeof inventory);
+
   return Object.values(grouped);
+};
+//calculate all fruits quantity for a specific user
+export const calculateTotalQuantity = (inventory) => {
+  if (!Array.isArray(inventory)) {
+    console.error("Expected an array for inventory, but received:", inventory);
+    return 0;
+  }
+
+  return inventory.reduce((total, item) => total + (Number(item.quantity) || 0), 0);
+};
+
+// returns an object
+export const groupByFruitIdWithTotal = (inventory) => {
+  const groupedInventory = groupByFruitId(inventory);
+  const totalQuantityForUser = calculateTotalQuantity(inventory);
+
+  return {
+    groupedInventory,
+    totalQuantityForUser,
+  };
 };

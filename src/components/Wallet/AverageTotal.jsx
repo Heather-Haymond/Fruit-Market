@@ -1,7 +1,7 @@
 import React from "react";
 import useUserInventory from "../../hooks/useUserInventory";
 import { Box, Typography, Paper, Divider } from "@mui/material";
-import { groupByFruitId } from "../../utils/aggregateData";
+import { groupByFruitId, calculateTotalQuantity  } from "../../utils/aggregateData";
 import AverageTotalItem from "./AverageTotalItem";
 
 const AverageTotal = () => {
@@ -16,6 +16,7 @@ const AverageTotal = () => {
   }
 
   const groupedInventory = groupByFruitId(inventory);
+  const totalQuantity = calculateTotalQuantity(inventory);
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -47,7 +48,7 @@ const AverageTotal = () => {
           ))}
           <Box sx={{ marginTop: 3, padding: 2, backgroundColor: "#f5f5f5" }}>
             <Typography variant="h6" gutterBottom>
-              Total Inventory Value: $
+              Total Value of Inventory: $
             
               {groupedInventory
                 .reduce(
@@ -57,9 +58,8 @@ const AverageTotal = () => {
                 .toFixed(2)}
                 </Typography>
             <Divider sx={{ marginY: 2 }} />
-            <Typography variant="body1">
-            </Typography>
-            <Typography variant="body1">
+    
+            <Typography variant="h6">
               Average Price per Fruit $
               {(() => {
                 const totalFruits = groupedInventory.reduce(
@@ -76,6 +76,11 @@ const AverageTotal = () => {
                 );
                 return (totalValue / totalFruits).toFixed(2);
               })()}
+            </Typography>
+            <Divider sx={{ marginY: 2 }} />
+        
+            <Typography variant="h6">
+              Total Quantity: {totalQuantity}
             </Typography>
           </Box>
         </>

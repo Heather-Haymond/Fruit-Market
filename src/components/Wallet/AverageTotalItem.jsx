@@ -11,7 +11,7 @@ const AverageTotalItem = ({ fruitGroup }) => {
       <ul>
         <li>Average Purchase Price: ${fruitGroup.averagePurchasePrice}</li>
         <li>Total Purchase Price: ${fruitGroup.totalPurchasePrice.toFixed(2)}</li>
-        <li>Total Quantity: {fruitGroup.totalQuantity}</li>
+        <li> Quantity: {fruitGroup.totalQuantity}</li>
       </ul>
     </div>
   );
