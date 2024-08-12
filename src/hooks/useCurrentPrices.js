@@ -5,6 +5,7 @@ const useCurrentPrices = () => {
     const dispatch = useDispatch();
     const currentPrices = useSelector(state => state.fruit.currentPrices);
     const [loading, setLoading] = useState(true);
+    const [updatesStarted, setUpdatesStarted] = useState(false);
 
     useEffect(() => {
         try {
@@ -23,8 +24,9 @@ const useCurrentPrices = () => {
 
     useEffect(() => {
         if (currentPrices && Object.keys(currentPrices).length > 0) {
-            setLoading(false);
             dispatch({ type: 'START_PERIODIC_UPDATES' });
+            setUpdatesStarted(true);
+            setLoading(false);
         }
     }, [currentPrices, dispatch]);
 

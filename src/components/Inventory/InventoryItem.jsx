@@ -13,10 +13,6 @@ const InventoryItem = React.memo(({ fruit, user, currentUser }) => {
     potential_profit_loss,
   } = fruit || {};
 
-
-  // console.log("User ID:", user.id);
-  // console.log("Received fruit data:", fruit);
-  // console.log("Received user data:", user);
   if (!userId) {
     console.error("User is not defined or user.id is missing in InventoryItem");
     return <div>Error: User is not defined</div>;

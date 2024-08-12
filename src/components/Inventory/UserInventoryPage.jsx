@@ -57,8 +57,7 @@ const UserInventory = () => {
   const { groupedInventory, totalQuantityForUser } = groupByFruitId(
     inventory
   ) || { groupedInventory: [], totalQuantityForUser: 0 };
-  // console.log("Current Prices:", currentPrices);
-  // console.log("Grouped Inventory:", groupedInventory);
+  
   return (
     <Container>
       {/* Display the "Your Inventory" title and "Total Cash" next to each other */}

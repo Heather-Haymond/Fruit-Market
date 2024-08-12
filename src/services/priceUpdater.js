@@ -4,7 +4,7 @@ const updatePricesPeriodically = () => {
   setInterval(() => {
     axios.put('http://localhost:5001/api/fruits/prices')
       .then(response => {
-        console.log('Fruit prices updated:', response.data);
+      
       })
       .catch(error => {
         console.error('Error updating fruit prices:', error);

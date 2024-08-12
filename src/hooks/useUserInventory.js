@@ -8,8 +8,6 @@ const useUserInventory = () => {
   const currentPrices = useSelector((state) => state.fruit.currentPrices);
 
   useEffect(() => {
-    // console.log("User ID:", userId);
-    // console.log("current_price:", currentPrices);
 
     const fetchInventory = async () => {
       try {

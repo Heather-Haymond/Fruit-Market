@@ -7,11 +7,6 @@ export const groupByFruitId = (inventory) => {
   const grouped = {};
   inventory.forEach((fruitItem, index) => {
     const { inventory_id, fruit_id, fruit_name, purchase_price, current_price, quantity } = fruitItem;
-    // console.log("Processing fruitItem:", fruitItem);
-    // console.log("Type of fruit_id:", typeof fruit_id);
-    console.log("Value of fruit_id:", fruit_id);
-    // console.log("Type of fruit_name:", typeof fruit_name);
-    // console.log("Value of fruit_name:", fruit_name);
 
     if (fruit_id === undefined || fruit_id === null) {
       console.error(`Item at index ${index} has an invalid fruit_id:`, fruitItem);

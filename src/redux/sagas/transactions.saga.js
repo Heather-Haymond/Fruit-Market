@@ -81,10 +81,7 @@ function* sellSaga(action) {
     const parsedNewTotalCash = parseFloat(newTotalCash.replace('$', ''));
 
     const formattedTotalCash = formatCash(parseFloat(newTotalCash));
-    console.log("SOLD New total cash:", formatCash(parseFloat(newTotalCash)));
-    console.log("Updated inventory:", updatedInventory);
-    console.log("sell fruit response:", response.data);
-
+    
     if (response.data && response.data.newTotalCash !== undefined) {
       const parsedNewTotalCash = parseFloat(response.data.newTotalCash.replace('$', ''));
       console.log("Updating total cash in sellSaga:", parsedNewTotalCash);
@@ -136,10 +133,6 @@ function* buySaga(action) {
     const parsedNewTotalCash = parseFloat(newTotalCash.replace('$', ''));
 
     const formattedTotalCash = formatCash(parseFloat(newTotalCash));
-    console.log("BUY New total cash:", formatCash(parseFloat(newTotalCash)));
-    console.log("Updated inventory:", updatedInventory);
-    console.log("Buy fruit response:", response.data);
-    console.log("Updating total cash in buySaga:", newTotalCash);
 
     yield put({ 
       type: "UPDATE_USER",

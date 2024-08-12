@@ -45,7 +45,6 @@ router.get("/inventory", async (req, res) => {
       JOIN fruits ON inventory.fruit_id = fruits.id;
     `;
     const { rows: inventory } = await pool.query(query);
-    console.log(`Fetched inventory data:`, inventory);
     res.status(200).json(inventory);
   } catch (error) {
     console.error("Error fetching inventory with fruit details:", error);
@@ -78,7 +77,6 @@ router.put("/prices", async (req, res) => {
 
   try {
     const result = await pool.query(queryText);
-    console.log(`Updated price for fruits`);
     res.status(200).json(result.rows);
   } catch (error) {
     console.error(`Error updating price for fruits`, error);
