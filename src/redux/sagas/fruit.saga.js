@@ -1,4 +1,4 @@
-import { call, put, takeLatest, delay, take } from 'redux-saga/effects'; 
+import { call, put, takeLatest, delay, take, fork } from 'redux-saga/effects'; 
 import axios from 'axios'; 
 
 function* fetchFruits() { 
@@ -43,6 +43,7 @@ function* updatePricesSaga(action) {
  // Periodic fetch and update prices saga
  function* periodicFetchPricesSaga() {
   while (true) {
+    yield delay(15000);
     // Dispatch update prices action with a callback
     yield put({
       type: 'UPDATE_PRICES',
@@ -57,8 +58,10 @@ function* updatePricesSaga(action) {
     // Fetch current prices after the update
     yield call(fetchCurrentPricesSaga);
 
-    yield delay(15000); // Wait 15 seconds before repeating
   }
+}
+function* startPeriodicUpdatesSaga() {
+  yield fork(periodicFetchPricesSaga);
 }
   
 function* fruitSaga() { 
@@ -66,7 +69,7 @@ function* fruitSaga() {
 yield takeLatest('FETCH_FRUITS', fetchFruits);
 yield takeLatest('UPDATE_PRICES', updatePricesSaga);
 yield takeLatest('FETCH_CURRENT_PRICES', fetchCurrentPricesSaga);
-yield call(periodicFetchPricesSaga);
+yield takeLatest('START_PERIODIC_UPDATES', startPeriodicUpdatesSaga);
 } 
 
 export default fruitSaga; 

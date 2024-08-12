@@ -4,29 +4,31 @@ import { useSelector, useDispatch } from 'react-redux';
 const useCurrentPrices = () => {
     const dispatch = useDispatch();
     const currentPrices = useSelector(state => state.fruit.currentPrices);
-    const previousPrices = useSelector(state => state.fruit.previousPrices);
-    const error = useSelector(state => state.fruit.error);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        dispatch({ type: 'FETCH_CURRENT_PRICES' });
-      }, [dispatch]);
-
-
-      useEffect(() => {
-        if (error) {
-            // If there's an error, keep previous prices
-            setLoading(false);
-        } else if (currentPrices) {
-            // If prices are updated, set loading to false
-            setLoading(false);
+        try {
+            const storedPrices = JSON.parse(localStorage.getItem('currentPrices'));
+            if (storedPrices && Object.keys(storedPrices).length > 0) {
+                dispatch({ type: 'LOAD_PRICES_FROM_STORAGE', payload: storedPrices });
+                setLoading(false);
+            } else {
+                dispatch({ type: 'FETCH_CURRENT_PRICES' });
+            }
+        } catch (error) {
+            console.error('Error loading prices from storage:', error);
+            dispatch({ type: 'FETCH_CURRENT_PRICES' });
         }
-    }, [currentPrices, error]);
+    }, [dispatch]);
 
-    const effectivePrices = error ? previousPrices : currentPrices;
+    useEffect(() => {
+        if (currentPrices && Object.keys(currentPrices).length > 0) {
+            setLoading(false);
+            dispatch({ type: 'START_PERIODIC_UPDATES' });
+        }
+    }, [currentPrices, dispatch]);
 
-    return { currentPrices: effectivePrices, loading, error };
+    return { currentPrices, loading };
 };
-
 
 export default useCurrentPrices;
