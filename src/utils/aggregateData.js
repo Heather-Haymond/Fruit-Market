@@ -23,31 +23,28 @@ export const groupByFruitId = (inventory) => {
     }
     const numericPrice = Number(purchase_price);
     const numericQuantity = Number(quantity);
-    if (!isNaN(numericPrice)) {
+    if (!isNaN(numericPrice) && !isNaN(numericQuantity)) {
       grouped[fruit_id].items.push({
         purchase_price: numericPrice,
         current_price: current_price,
         inventory_id: inventory_id,
         quantity: numericQuantity,
       });
-      grouped[fruit_id].totalQuantity += 1; 
-      grouped[fruit_id].totalPurchasePrice += numericPrice;
+      grouped[fruit_id].totalQuantity += numericQuantity;
+      grouped[fruit_id].totalPurchasePrice += numericPrice * numericQuantity;
       grouped[fruit_id].lastPurchasePrice = numericPrice;
     } else {
       console.error("Invalid purchase_price:", purchase_price);
     }
   });
 
-
-  
   // Calculate the average purchase price for each fruit group
   Object.values(grouped).forEach((group) => {
-    if (group.totalQuantity > 0) {
-    group.averagePurchasePrice = (group.totalPurchasePrice / group.totalQuantity).toFixed(2);
-  } else {
-    group.averagePurchasePrice = "0.00";
-  }
+    group.averagePurchasePrice = group.totalQuantity > 0 
+      ? (group.totalPurchasePrice / group.totalQuantity).toFixed(2) 
+      : "0.00";
   });
+
 
   return Object.values(grouped);
 };
@@ -58,7 +55,10 @@ export const calculateTotalQuantity = (inventory) => {
     return 0;
   }
 
-  return inventory.reduce((total, item) => total + (Number(item.quantity) || 0), 0);
+  return inventory.reduce((total, item) => {
+    const quantity = Number(item.quantity);
+    return total + (isNaN(quantity) ? 0 : quantity);
+  }, 0);
 };
 
 // returns an object

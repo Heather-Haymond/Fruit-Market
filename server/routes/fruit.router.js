@@ -98,7 +98,7 @@ router.get("/", async (req, res) => {
 });
 
 // Fetch current prices of fruits
-router.get("/current-prices", async (req, res) => {
+router.get("/prices", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT id AS fruit_id, current_price FROM fruits"
