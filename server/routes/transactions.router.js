@@ -295,8 +295,8 @@ router.post("/sell", async (req, res) => {
     // Calculate new total cash
     let newTotalCash = currentTotalCash + totalSaleValue;
 
-//  // Ensure cash is capped at $100
-//     newTotalCash = Math.min(newTotalCash, 100);
+ // Ensure cash is capped at $100
+    newTotalCash = Math.min(newTotalCash, 100);
 
     // Update total cash
     await updateTotalCash(client, user_id, newTotalCash);
