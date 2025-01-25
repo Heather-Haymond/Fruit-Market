@@ -32,8 +32,8 @@ function* updatePricesSaga() {
     } catch (error) {
       console.error('Failed to fetch prices', error);
     }
-    // Wait for 15 seconds before the next update
-    yield delay(15000); 
+    // Wait for 8 seconds before the next update
+    yield delay(8000); 
   }
 }
 
