@@ -9,7 +9,7 @@ const updatePricesPeriodically = () => {
       .catch(error => {
         console.error('Error updating fruit prices:', error);
       });
-  }, 15000); // Updates every 15 seconds
+  }, 5000); // Updates every 5 seconds
 };
 
 module.exports = updatePricesPeriodically;
