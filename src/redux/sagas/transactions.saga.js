@@ -76,6 +76,7 @@ function* sellSaga(action) {
       current_price: Number(current_price),
       inventory_id: yield call(fetchInventoryId, user_id, fruit_id, inventory_id),
     });
+    console.log("API Response from /api/transactions/sell:", response.data);
 
     const { newTotalCash, updatedInventory } = response.data;
     const parsedNewTotalCash = parseFloat(newTotalCash.replace('$', ''));
